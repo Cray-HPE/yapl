@@ -1,5 +1,6 @@
 package util
 
 type Config struct {
-	File string
+	File  string
+	Debug bool
 }

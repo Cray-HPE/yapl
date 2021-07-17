@@ -57,7 +57,8 @@ func main() {
 // converts a cli context into a goss Config
 func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 	cfg := &util.Config{
-		File: c.GlobalString("file"),
+		File:  c.GlobalString("file"),
+		Debug: c.Bool("debug"),
 	}
 
 	return cfg

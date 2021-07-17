@@ -1,6 +1,6 @@
 kind: pipeline
 metadata:
-  name: 1.2 Child Pipeline
+  name: 2.2 Grandchild Pipeline
   description: >-
     this is a multiple line description that
     can be used as docs
@@ -8,4 +8,3 @@ metadata:
 spec:
   steps:
     - ../steps/demo.yaml
-    - ./grandchild.yaml

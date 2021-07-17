@@ -3,9 +3,12 @@ package model
 type Step struct {
 	Kind     string   `yaml:"kind,omitempty"`
 	Metadata Metadata `yaml:"metadata,omitempty"`
-	Jobs     []Job    `yaml:"jobs,omitempty"`
+	Spec     JobsMap  `yaml:"spec,omitempty"`
 }
 
+type JobsMap struct {
+	Jobs []Job `yaml:"jobs,omitempty"`
+}
 type Job struct {
 	PreCondition  Runnable `yaml:"preCondition,omitempty"`
 	Action        Runnable `yaml:"action,omitempty"`

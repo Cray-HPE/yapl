@@ -3,9 +3,11 @@ package model
 type Pipeline struct {
 	Kind     string   `yaml:"kind,omitempty"`
 	Metadata Metadata `yaml:"metadata,omitempty"`
-	Steps    []string `yaml:"steps,omitempty"`
+	Spec     StepsMap `yaml:"spec,omitempty"`
 }
-type StepsMap map[string]*string
+type StepsMap struct {
+	Steps []string `yaml:"steps,omitempty"`
+}
 
 func NewPipeline() *Pipeline {
 	return &Pipeline{}

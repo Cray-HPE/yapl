@@ -7,8 +7,9 @@ metadata:
     can be used as docs
 
     we can also generate doc from this part
-steps:
-  # import a step
-  - ../steps/demo.yaml
-  # nested pipelines
-  - ./child.yaml
+spec:
+  steps:
+    # import a step
+    - ../steps/demo.yaml
+    # nested pipelines
+    - ./child.yaml
