@@ -29,7 +29,7 @@ func main() {
 		{
 			Name:    "render",
 			Aliases: []string{"r"},
-			Usage:   "render gossfile after imports",
+			Usage:   "render yapl after imports",
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "debug, d",
@@ -41,9 +41,23 @@ func main() {
 				if err != nil {
 					return err
 				}
-
-				//fmt.Print(j)
-
+				return nil
+			},
+		},
+		{
+			Name:  "execute",
+			Usage: "execute yapl after imports",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "debug, d",
+					Usage: fmt.Sprintf("Print debugging info when rendering"),
+				},
+			},
+			Action: func(c *cli.Context) error {
+				err := util.ExecutePipeline(newRuntimeConfigFromCLI(c))
+				if err != nil {
+					return err
+				}
 				return nil
 			},
 		},

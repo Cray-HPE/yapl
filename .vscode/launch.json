@@ -12,6 +12,14 @@
             "mode": "debug",
             "program": "${workspaceFolder}/cmd/yapl.go",
             "args": ["-f", "/Users/dzou/git/yapl/example/pipeline/pipeline.yaml", "render", "--debug"]
+        },
+        {
+            "name": "Debug: Execute",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/yapl.go",
+            "args": ["-f", "/Users/dzou/git/yapl/example/pipeline/pipeline.yaml", "execute"]
         }
     ]
 }
