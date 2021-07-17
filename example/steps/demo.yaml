@@ -1,0 +1,25 @@
+kind: step
+metadata:
+  name: 1.1 Example Steps
+  description: |-
+    this is a multiple line description that
+    can be used as docs
+    we can also generate doc from this part
+jobs:
+  - preCondition:
+      description: |-
+        this is a multiple line description for a pre-condition
+        which explains what is going to be checked and how to fix
+        any issue
+      command: sh -c 'echo Hello world - pre-condition'
+    action:
+      description: |-
+        this is a multiple line description for an actual action
+        which explains what is going to run 
+      command: sh -c 'echo Hello world - action'
+    errorHandling:
+      description: |-
+        this is a multiple line description for error-handling
+        which explains how to fix
+        any issue
+      command: sh -c 'echo Hello world - error-handling'
