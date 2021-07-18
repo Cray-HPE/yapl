@@ -1,0 +1,20 @@
+kind: step
+metadata:
+  name: Append file
+  description: |-
+    # This step appends to a file
+spec:
+  jobs:
+    - preCondition:
+        description: 
+        command: ''
+      action:
+        description: |-
+          # append file
+          use `echo` cmd to create a file 
+        command: 'echo "lalalala" >> /tmp/demo.txt'
+      errorHandling:
+        description: |-
+          # WTH
+          this is `me failing english? umpossible` moment
+        command: sh -c 'echo "HELP...."'

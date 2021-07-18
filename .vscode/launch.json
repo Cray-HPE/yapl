@@ -11,15 +11,15 @@
             "request": "launch",
             "mode": "debug",
             "program": "${workspaceFolder}/cmd/yapl.go",
-            "args": ["-f", "/Users/dzou/git/yapl/example/pipeline/pipeline.yaml", "render", "--debug"]
+            "args": ["-f", "/Users/dzou/git/yapl/example/demo/main.yaml", "render", "--debug"]
         },
         {
             "name": "Debug: Execute",
             "type": "go",
             "request": "launch",
-            "mode": "debug",
+            "mode": "auto",
             "program": "${workspaceFolder}/cmd/yapl.go",
-            "args": ["-f", "/Users/dzou/git/yapl/example/pipeline/pipeline.yaml", "execute"]
+            "args": ["-f", "/Users/dzou/git/yapl/example/demo/main.yaml", "execute"]
         }
     ]
 }

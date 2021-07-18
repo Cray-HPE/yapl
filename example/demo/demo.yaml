@@ -1,0 +1,16 @@
+kind: pipeline
+metadata:
+  name: Demo Pipeline
+  description: |-
+    This is a demo pipeline that does some simple file operations
+    ## create file
+    ## append text to the file
+    ## delete file
+    ## delete file again
+    this will fail because file doesn't exist
+spec:
+  steps:
+    - ./steps/create-file.yaml
+    - ./steps/append-text.yaml
+    - ./steps/delete-file.yaml
+    - ./steps/delete-file.yaml

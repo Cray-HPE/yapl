@@ -1,0 +1,31 @@
+kind: step
+metadata:
+  name: Delete file
+  description: |-
+    # This step deletes to a file
+spec:
+  jobs:
+    - preCondition:
+        description: |-
+          file should exist
+          
+          
+          Eget felis eget nunc lobortis mattis aliquam faucibus purus in. Vulputate enim nulla aliquet porttitor lacus luctus accumsan tortor posuere. Ultrices dui sapien eget mi proin sed. Neque aliquam vestibulum morbi blandit cursus risus at ultrices. Etiam dignissim diam quis enim lobortis scelerisque fermentum dui. Nulla posuere sollicitudin aliquam ultrices sagittis. Urna nec tincidunt praesent semper. Enim nunc faucibus a pellentesque sit. Pellentesque sit amet porttitor eget dolor morbi. Arcu risus quis varius quam quisque id. Tempor nec feugiat nisl pretium. Accumsan in nisl nisi scelerisque eu ultrices vitae. Ac tortor vitae purus faucibus ornare suspendisse sed nisi. Orci nulla pellentesque dignissim enim. In hac habitasse platea dictumst quisque sagittis purus sit. Netus et malesuada fames ac.
+        command: ''
+      action:
+        description: |-
+          use `rm` cmd to delete a file 
+
+          Eget felis eget nunc lobortis mattis aliquam faucibus purus in. Vulputate enim nulla aliquet porttitor lacus luctus accumsan tortor posuere. Ultrices dui sapien eget mi proin sed. Neque aliquam vestibulum morbi blandit cursus risus at ultrices. Etiam dignissim diam quis enim lobortis scelerisque fermentum dui. Nulla posuere sollicitudin aliquam ultrices sagittis. Urna nec tincidunt praesent semper. Enim nunc faucibus a pellentesque sit. Pellentesque sit amet porttitor eget dolor morbi. Arcu risus quis varius quam quisque id. Tempor nec feugiat nisl pretium. Accumsan in nisl nisi scelerisque eu ultrices vitae. Ac tortor vitae purus faucibus ornare suspendisse sed nisi. Orci nulla pellentesque dignissim enim. In hac habitasse platea dictumst quisque sagittis purus sit. Netus et malesuada fames ac.
+        command: 'rm /tmp/demo.txt'
+      errorHandling:
+        description: |-
+          # WTH
+          this is `me failing english? umpossible` moment
+          # How to fix
+          this is how you can fix it
+          # Verify your fix
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat ac felis donec et odio pellentesque diam volutpat. Vulputate ut pharetra sit amet aliquam id diam maecenas. Quam nulla porttitor massa id neque. Tortor condimentum lacinia quis vel eros donec. Tempor nec feugiat nisl pretium. Neque convallis a cras semper auctor neque vitae tempus quam. Bibendum neque egestas congue quisque. Proin libero nunc consequat interdum varius sit amet mattis. Orci eu lobortis elementum nibh tellus. Vitae suscipit tellus mauris a. Quis enim lobortis scelerisque fermentum dui faucibus in. Id leo in vitae turpis massa sed elementum. Integer feugiat scelerisque varius morbi. Velit euismod in pellentesque massa placerat duis ultricies lacus.
+
+          Facilisi nullam vehicula ipsum a. Viverra nibh cras pulvinar mattis nunc sed blandit libero volutpat. Venenatis a condimentum vitae sapien. Eget gravida cum sociis natoque penatibus et magnis dis. Faucibus interdum posuere lorem ipsum dolor sit amet consectetur adipiscing. Ac odio tempor orci dapibus ultrices. Maecenas volutpat blandit aliquam etiam erat. Viverra tellus in hac habitasse platea dictumst vestibulum rhoncus est. Volutpat est velit egestas dui id. Vel pharetra vel turpis nunc eget lorem dolor sed viverra. Aliquam nulla facilisi cras fermentum odio. Faucibus pulvinar elementum integer enim. Condimentum lacinia quis vel eros donec ac odio tempor orci. Nec nam aliquam sem et tortor consequat id porta nibh.
+        command: sh -c 'echo "HELP...."'

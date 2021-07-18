@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/dzou-hpe/yapl/util"
+	"github.com/fatih/color"
 	"github.com/urfave/cli"
 )
 
@@ -23,6 +24,9 @@ func main() {
 			Value:  "./pipeline.yaml",
 			Usage:  "Pipeline file to read from",
 			EnvVar: "PIPELINE_FILE",
+		},
+		cli.BoolFlag{
+			Name: "no-color",
 		},
 	}
 	app.Commands = []cli.Command{
@@ -61,6 +65,17 @@ func main() {
 				return nil
 			},
 		},
+		{
+			Name:  "doc",
+			Usage: "generate doc after imports",
+			Action: func(c *cli.Context) error {
+				err := util.DocGenFromPipeline(newRuntimeConfigFromCLI(c))
+				if err != nil {
+					return err
+				}
+				return nil
+			},
+		},
 	}
 	err := app.Run(os.Args)
 	if err != nil {
@@ -71,8 +86,13 @@ func main() {
 // converts a cli context into a goss Config
 func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 	cfg := &util.Config{
-		File:  c.GlobalString("file"),
-		Debug: c.Bool("debug"),
+		File:    c.GlobalString("file"),
+		Debug:   c.Bool("debug"),
+		NoColor: c.GlobalBool("no-color"),
+	}
+
+	if cfg.NoColor {
+		color.NoColor = true
 	}
 
 	return cfg
