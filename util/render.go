@@ -26,9 +26,9 @@ func RenderPipeline(cfg *Config) ([]model.GenericYAML, error) {
 
 	if cfg.Debug {
 		for _, rendered := range renderedPipeline {
-			Blue.Println("---")
+			White.Println("---")
 			renderedData, _ := yaml.Marshal(rendered)
-			Blue.Printf("%v", string(renderedData))
+			White.Printf("%v", string(renderedData))
 		}
 	}
 	return renderedPipeline, nil

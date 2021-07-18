@@ -7,12 +7,23 @@ spec:
   jobs:
     - preCondition:
         description: 
-        command: ''
+        command: |-
+          reqSpace=100000000 # ~100GB 
+          availSpace=$(df "$HOME" | awk 'NR==2 { print $4 }')
+          if (( availSpace < reqSpace )); then
+              echo "Not enough space, required: $reqSpace, available space: $availSpace" >&2
+              exit 1
+          fi
+          sleep $[ ( $RANDOM % 3 )  + 1 ]s
+          echo "Enough space"
       action:
         description: |-
           # Create file
           use `touch` cmd to create a file 
-        command: 'touch /tmp/demo.txt'
+        command: |-
+          touch /tmp/demo.txt
+          sleep $[ ( $RANDOM % 3 )  + 1 ]s
+          echo "/tmp/demo.txt is created"
       errorHandling:
         description: |-
           # WTH

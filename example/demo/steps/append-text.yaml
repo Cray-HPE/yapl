@@ -7,12 +7,17 @@ spec:
   jobs:
     - preCondition:
         description: 
-        command: ''
+        command: |-
+          sleep $[ ( $RANDOM % 3 )  + 1 ]s
+          echo "/tmp/demo.txt exists"
       action:
         description: |-
           # append file
           use `echo` cmd to create a file 
-        command: 'echo "lalalala" >> /tmp/demo.txt'
+        command: |-
+          sleep $[ ( $RANDOM % 3 )  + 1 ]s
+          echo "lalalala" >> /tmp/demo.txt
+          echo "lalalala is appened to /tmp/demo.txt"
       errorHandling:
         description: |-
           # WTH

@@ -36,13 +36,18 @@ func ExecutePipeline(cfg *Config) error {
 
 func runCommand(cmd string, prefix string) error {
 	command := exec.Command("sh", "-c", cmd)
+	if debug {
+		command = exec.Command("sh", "-cx", cmd)
+	}
 	command.Stdin = os.Stdin
 	command.Stdout = os.Stdout
 	command.Stderr = os.Stderr
 
-	Blue.Printf("==============> Command output: (%s)\n", prefix)
+	Blue.Printf("==============> Command output: (%s) .....\n", prefix)
 	err := command.Run()
+	Blue.Printf("==============> Command output: (%s) - ", prefix)
 	if err != nil {
+		Red.Println("Error")
 		return err
 	}
 	Green.Println("Done")
@@ -52,7 +57,7 @@ func runCommand(cmd string, prefix string) error {
 func executePipeline(pipeline model.GenericYAML) error {
 	Blue.Printf("==> Pipeline: %s \n", pipeline.Metadata.Name)
 	if debug {
-		Yellow.Println(Indent(pipeline.Metadata.Description, "    "))
+		fmt.Println(Indent(MarkdownToText(pipeline.Metadata.Description), "    "))
 	}
 	return nil
 }
@@ -60,14 +65,11 @@ func executePipeline(pipeline model.GenericYAML) error {
 func executeStep(pipeline model.GenericYAML) error {
 	Blue.Printf("======> Step: %s \n", pipeline.Metadata.Name)
 	if debug {
-		Yellow.Println(Indent(pipeline.Metadata.Description, "        "))
+		fmt.Println(Indent(MarkdownToText(pipeline.Metadata.Description), "        "))
 	}
 	step := pipeline.ToStep()
-	for index, job := range step.Spec.Jobs {
-		Blue.Printf("==========> job: %d (Pre-condition)\n", index)
-		if debug {
-			Yellow.Println(Indent(job.PreCondition.Description, "                "))
-		}
+	for _, job := range step.Spec.Jobs {
+		Blue.Println("==========> job:")
 		err := runCommand(job.PreCondition.Command, "Precondition")
 		if err != nil {
 			Red.Println("ERROR: Pre condition failed, stop pipeline")
@@ -79,9 +81,10 @@ func executeStep(pipeline model.GenericYAML) error {
 		}
 		err = runCommand(job.Action.Command, "Action")
 		if err != nil {
+			err := runCommand(job.ErrorHandling.Command, "Error Handling")
 			Red.Println("ERROR: Action failed!!!")
 			fmt.Println(MarkdownToText(job.ErrorHandling.Description))
-			return runCommand(job.ErrorHandling.Command, "Error Handling")
+			return err
 		}
 
 	}
