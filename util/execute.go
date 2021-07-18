@@ -57,7 +57,7 @@ func runCommand(cmd string, prefix string) error {
 func executePipeline(pipeline model.GenericYAML) error {
 	Blue.Printf("==> Pipeline: %s \n", pipeline.Metadata.Name)
 	if debug {
-		fmt.Println(Indent(MarkdownToText(pipeline.Metadata.Description), "    "))
+		fmt.Println(MarkdownToText(pipeline.Metadata.Description))
 	}
 	return nil
 }
@@ -65,11 +65,15 @@ func executePipeline(pipeline model.GenericYAML) error {
 func executeStep(pipeline model.GenericYAML) error {
 	Blue.Printf("======> Step: %s \n", pipeline.Metadata.Name)
 	if debug {
-		fmt.Println(Indent(MarkdownToText(pipeline.Metadata.Description), "        "))
+		fmt.Println(MarkdownToText(pipeline.Metadata.Description))
 	}
 	step := pipeline.ToStep()
 	for _, job := range step.Spec.Jobs {
 		Blue.Println("==========> job:")
+		if debug {
+			Blue.Println("==============> Command (Precondition):")
+			fmt.Println(MarkdownToText(job.PreCondition.Description))
+		}
 		err := runCommand(job.PreCondition.Command, "Precondition")
 		if err != nil {
 			Red.Println("ERROR: Pre condition failed, stop pipeline")
@@ -77,7 +81,8 @@ func executeStep(pipeline model.GenericYAML) error {
 		}
 
 		if debug {
-			Yellow.Println(Indent(job.Action.Description, "                "))
+			Blue.Println("==============> Command (Action):")
+			fmt.Println(MarkdownToText(job.Action.Description))
 		}
 		err = runCommand(job.Action.Command, "Action")
 		if err != nil {
