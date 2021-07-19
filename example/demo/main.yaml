@@ -2,7 +2,10 @@ kind: pipeline
 metadata:
   name: Demo Pipeline
   description: |-
+    # Demo pipeline
     This is a demo pipeline that does some simple file operations
+
+    It is just an exmaple of what the framework can do
     ## create file
     ## append text to the file
     ## delete file
