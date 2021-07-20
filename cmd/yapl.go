@@ -25,6 +25,11 @@ func main() {
 			Usage:  "Pipeline file to read from",
 			EnvVar: "PIPELINE_FILE",
 		},
+		cli.StringFlag{
+			Name:   "vars",
+			Usage:  "json/yaml file containing variables for template",
+			EnvVar: "GOSS_VARS",
+		},
 		cli.BoolFlag{
 			Name: "no-color",
 		},
@@ -89,6 +94,7 @@ func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 		File:    c.GlobalString("file"),
 		Debug:   c.Bool("debug"),
 		NoColor: c.GlobalBool("no-color"),
+		Vars:    c.GlobalString("vars"),
 	}
 
 	if cfg.NoColor {

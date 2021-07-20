@@ -10,9 +10,12 @@ import (
 )
 
 var renderedPipeline []model.GenericYAML
+var currentTemplateFilter TemplateFilter
 
 func RenderPipeline(cfg *Config) ([]model.GenericYAML, error) {
 	renderedPipeline = []model.GenericYAML{}
+	var err error
+	currentTemplateFilter, err = NewTemplateFilter(cfg.Vars)
 
 	tmpYaml, err := readYAML(cfg.File)
 	if err != nil {
@@ -44,13 +47,13 @@ func readYAML(filePath string) (model.GenericYAML, error) {
 }
 
 func readYAMLData(data []byte, detectFormat bool) (model.GenericYAML, error) {
-	// var err error
-	// if currentTemplateFilter != nil {
-	// 	data, err = currentTemplateFilter(data)
-	// 	if err != nil {
-	// 		return model.Pipeline{}, err
-	// 	}
-	// }
+	var err error
+	if currentTemplateFilter != nil {
+		data, err = currentTemplateFilter(data)
+		if err != nil {
+			return model.GenericYAML{}, err
+		}
+	}
 
 	genericYAML := model.NewGenericYAML()
 	// Horrible, but will do for now
@@ -84,7 +87,6 @@ func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error 
 
 	pipeline := genericYAML.ToPipeline()
 
-	// Merge gossfiles in sorted order
 	for _, step := range pipeline.Spec.Steps {
 		fpath := filepath.Join(path, step)
 		matches, err := filepath.Glob(fpath)

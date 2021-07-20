@@ -1,0 +1,5 @@
+random: 3
+hosts:
+  - localhost
+  - ncn-m001
+  - ncn-m002

@@ -1,0 +1,34 @@
+kind: step
+metadata:
+  name: Create file on all hosts
+  description: |-
+    # This step creates a file on all hosts
+    demo vars and go template
+spec:
+  jobs:
+    {{range .Vars.hosts}}
+    - preCondition:
+        description: 
+        command: |-
+          reqSpace=100000000 # ~100GB 
+          availSpace=$(df "$HOME" | awk 'NR==2 { print $4 }')
+          if (( availSpace < reqSpace )); then
+              echo "Not enough space, required: $reqSpace, available space: $availSpace" >&2
+              exit 1
+          fi
+          sleep $[ ( $RANDOM % 3 )  + 1 ]s
+          echo "Enough space: {{.}}"
+      action:
+        description: |-
+          # Create file
+          use `touch` cmd to create a file 
+        command: |-
+          touch /tmp/demo.txt
+          sleep $[ ( $RANDOM % 3 )  + 1 ]s
+          echo "/tmp/demo.txt is created: {{.}}"
+      errorHandling:
+        description: |-
+          # WTH
+          this is `me failing english? umpossible` moment
+        command: sh -c 'echo "HELP.... {{.}}"'
+    {{end}}

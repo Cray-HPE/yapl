@@ -19,7 +19,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/cmd/yapl.go",
-            "args": ["-f", "/Users/dzou/git/yapl/example/demo/main.yaml", "execute"]
+            "args": ["-f", "/Users/dzou/git/yapl/example/demo/main.yaml","--vars", "/Users/dzou/git/yapl/example/demo/vars.yaml", "execute"]
         }
     ]
 }

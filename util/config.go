@@ -4,4 +4,5 @@ type Config struct {
 	File    string
 	Debug   bool
 	NoColor bool
+	Vars    string
 }

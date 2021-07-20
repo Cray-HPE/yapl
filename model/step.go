@@ -10,6 +10,8 @@ type JobsMap struct {
 	Jobs []Job `yaml:"jobs,omitempty"`
 }
 type Job struct {
+	// Name          string   `yaml:"name,omitempty"`
+	// TargetHost    string   `yaml:"targetHost,omitempty"`
 	PreCondition  Runnable `yaml:"preCondition,omitempty"`
 	Action        Runnable `yaml:"action,omitempty"`
 	ErrorHandling Runnable `yaml:"errorHandling,omitempty"`

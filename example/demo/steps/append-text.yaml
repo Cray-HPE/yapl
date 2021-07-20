@@ -10,7 +10,7 @@ spec:
           # File exists
           make sure the file we are appending to does exist
         command: |-
-          sleep $[ ( $RANDOM % 3 )  + 1 ]s
+          sleep $[ ( $RANDOM % {{.Vars.random}} )  + 1 ]s
           echo "/tmp/demo.txt exists"
       action:
         description: |-
