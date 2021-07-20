@@ -34,7 +34,7 @@ func ExecutePipeline(cfg *Config) error {
 	return nil
 }
 
-func runCommand(cmd string, prefix string) error {
+func runCommand(cmd string) error {
 	command := exec.Command("sh", "-c", cmd)
 	if debug {
 		command = exec.Command("sh", "-cx", cmd)
@@ -43,15 +43,7 @@ func runCommand(cmd string, prefix string) error {
 	command.Stdout = os.Stdout
 	command.Stderr = os.Stderr
 
-	Blue.Printf("==============> Command output: (%s) .....\n", prefix)
-	err := command.Run()
-	Blue.Printf("==============> Command output: (%s) - ", prefix)
-	if err != nil {
-		Red.Println("Error")
-		return err
-	}
-	Green.Println("Done")
-	return nil
+	return command.Run()
 }
 
 func executePipeline(pipeline model.GenericYAML) error {
@@ -70,27 +62,33 @@ func executeStep(pipeline model.GenericYAML) error {
 	step := pipeline.ToStep()
 	for _, job := range step.Spec.Jobs {
 		Blue.Println("==========> job:")
+		Yellow.Println("==============> Precondition")
 		if debug {
-			Blue.Println("==============> Command (Precondition):")
 			fmt.Println(MarkdownToText(job.PreCondition.Description))
 		}
-		err := runCommand(job.PreCondition.Command, "Precondition")
+		err := runCommand(job.PreCondition.Command)
 		if err != nil {
 			Red.Println("ERROR: Pre condition failed, stop pipeline")
 			return err
 		}
+		Green.Println("==============> Precondition: Done")
 
+		Yellow.Println("==============> Action")
 		if debug {
-			Blue.Println("==============> Command (Action):")
 			fmt.Println(MarkdownToText(job.Action.Description))
 		}
-		err = runCommand(job.Action.Command, "Action")
+		err = runCommand(job.Action.Command)
 		if err != nil {
-			err := runCommand(job.ErrorHandling.Command, "Error Handling")
-			Red.Println("ERROR: Action failed!!!")
+			Blue.Println("==============> Error Handling")
+			runCommand(job.ErrorHandling.Command)
+			Green.Println("==============> Error Handling: Done")
+			Red.Println("==============> Action: ERROR, Action failed!!! Error handling has been executed")
+			fmt.Println()
+			Red.Println("Check the doc below for troubleshooting:")
 			fmt.Println(MarkdownToText(job.ErrorHandling.Description))
 			return err
 		}
+		Green.Println("==============> Action: Done")
 
 	}
 	return nil
