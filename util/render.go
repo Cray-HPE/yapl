@@ -56,7 +56,6 @@ func readYAMLData(data []byte, detectFormat bool) (model.GenericYAML, error) {
 	}
 
 	genericYAML := model.NewGenericYAML()
-	// Horrible, but will do for now
 	if err := unmarshalYAML(data, genericYAML); err != nil {
 		return *genericYAML, err
 	}
