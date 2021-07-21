@@ -24,7 +24,7 @@ func RenderPipeline(cfg *Config) ([]model.GenericYAML, error) {
 
 	err = mergeYAMLData(tmpYaml, 0, filepath.Dir(cfg.File))
 	if err != nil {
-		return []model.GenericYAML{}, err
+		return []model.GenericYAML{{}}, err
 	}
 
 	if cfg.Debug {
@@ -103,7 +103,7 @@ func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error 
 			j.Metadata.Parent = genericYAML.Metadata.Name
 			err = mergeYAMLData(j, depth, fdir)
 			if err != nil {
-				return fmt.Errorf("could not write json data: %s", err)
+				return err
 			}
 		}
 	}

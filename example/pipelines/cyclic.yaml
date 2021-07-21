@@ -1,0 +1,12 @@
+kind: pipeline
+metadata:
+  name: Cyclic Pipeline
+  description: |-
+    # Ccylic pipeline
+    This is a Cyclic pipeline that will break
+    
+    ![logo](https://ca.slack-edge.com/E01LD9FH0JZ-U01T66ZG20J-369a4b616e69-72)
+    
+spec:
+  steps: 
+    - ./cyclic.yaml

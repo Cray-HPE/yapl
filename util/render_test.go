@@ -81,6 +81,14 @@ func Test_RenderPipeline(t *testing.T) {
 			want:    []model.GenericYAML{{}},
 			wantErr: true,
 		},
+		{
+			name: "cyclic pipeline",
+			args: args{
+				file: "example/pipelines/cyclic.yaml",
+			},
+			want:    []model.GenericYAML{{}},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
