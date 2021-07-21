@@ -40,8 +40,7 @@ metadata:
     
 spec:
   steps:
-    # - ./steps/create-file.yaml
-    # - ./steps/append-text.yaml
-    # - ./steps/delete-file.yaml
-    # - ./steps/delete-file.yaml
-    - ./steps/create-file-all-hosts.yaml
+    - ../steps/create-file.yaml
+    - ../steps/append-text.yaml
+    - ../steps/delete-file.yaml
+    - ../steps/delete-file.yaml

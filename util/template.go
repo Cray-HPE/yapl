@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
 	"text/template"
 
 	"github.com/Masterminds/sprig"
@@ -60,7 +59,7 @@ func readFile(f string) (string, error) {
 		return "", err
 
 	}
-	return strings.TrimSpace(string(b)), nil
+	return string(b), nil
 }
 
 func getEnv(key string, def ...string) string {

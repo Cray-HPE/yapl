@@ -19,7 +19,7 @@ func RenderPipeline(cfg *Config) ([]model.GenericYAML, error) {
 
 	tmpYaml, err := readYAML(cfg.File)
 	if err != nil {
-		return []model.GenericYAML{}, err
+		return []model.GenericYAML{{}}, err
 	}
 
 	err = mergeYAMLData(tmpYaml, 0, filepath.Dir(cfg.File))
@@ -42,11 +42,10 @@ func readYAML(filePath string) (model.GenericYAML, error) {
 	if err != nil {
 		return model.GenericYAML{}, fmt.Errorf("file error: %v", err)
 	}
-
-	return readYAMLData(file, false)
+	return readYAMLData(file)
 }
 
-func readYAMLData(data []byte, detectFormat bool) (model.GenericYAML, error) {
+func readYAMLData(data []byte) (model.GenericYAML, error) {
 	var err error
 	if currentTemplateFilter != nil {
 		data, err = currentTemplateFilter(data)
