@@ -6,6 +6,7 @@ import (
 	"os/exec"
 
 	"github.com/dzou-hpe/yapl/model"
+	"github.com/pterm/pterm"
 )
 
 var debug bool
@@ -47,7 +48,7 @@ func runCommand(cmd string) error {
 }
 
 func executePipeline(pipeline model.GenericYAML) error {
-	Blue.Printf("==> Pipeline: %s \n", pipeline.Metadata.Name)
+	pterm.FgBlue.Printf("==> Pipeline: %s \n", pipeline.Metadata.Name)
 	if debug {
 		fmt.Println(MarkdownToText(pipeline.Metadata.Description))
 	}
@@ -55,40 +56,41 @@ func executePipeline(pipeline model.GenericYAML) error {
 }
 
 func executeStep(pipeline model.GenericYAML) error {
-	Blue.Printf("======> Step: %s \n", pipeline.Metadata.Name)
+	// Print a section with level two.
+	pterm.FgBlue.Printf("======> Step: %s \n", pipeline.Metadata.Name)
 	if debug {
 		fmt.Println(MarkdownToText(pipeline.Metadata.Description))
 	}
 	step := pipeline.ToStep()
 	for _, job := range step.Spec.Jobs {
-		Blue.Println("==========> job:")
-		Yellow.Println("==============> Precondition")
+		pterm.FgBlue.Println("==========> job:")
+		pterm.FgYellow.Println("==============> Precondition")
 		if debug {
 			fmt.Println(MarkdownToText(job.PreCondition.Description))
 		}
 		err := runCommand(job.PreCondition.Command)
 		if err != nil {
-			Red.Println("ERROR: Pre condition failed, stop pipeline")
+			pterm.FgRed.Println("ERROR: Pre condition failed, stop pipeline")
 			return err
 		}
-		Green.Println("==============> Precondition: Done")
+		pterm.FgGreen.Println("==============> Precondition: Done")
 
-		Yellow.Println("==============> Action")
+		pterm.FgYellow.Println("==============> Action")
 		if debug {
 			fmt.Println(MarkdownToText(job.Action.Description))
 		}
 		err = runCommand(job.Action.Command)
 		if err != nil {
-			Blue.Println("==============> Error Handling")
+			pterm.FgBlue.Println("==============> Error Handling")
 			runCommand(job.ErrorHandling.Command)
-			Green.Println("==============> Error Handling: Done")
-			Red.Println("==============> Action: ERROR, Action failed!!! Error handling has been executed")
+			pterm.FgGreen.Println("==============> Error Handling: Done")
+			pterm.FgRed.Println("==============> Action: ERROR, Action failed!!! Error handling has been executed")
 			fmt.Println()
-			Red.Println("Check the doc below for troubleshooting:")
+			pterm.FgRed.Println("Check the doc below for troubleshooting:")
 			fmt.Println(MarkdownToText(job.ErrorHandling.Description))
 			return err
 		}
-		Green.Println("==============> Action: Done")
+		pterm.FgGreen.Println("==============> Action: Done")
 
 	}
 	return nil

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dzou-hpe/yapl/model"
+	"github.com/pterm/pterm"
 )
 
 func DocGenFromPipeline(cfg *Config) error {
@@ -14,12 +15,12 @@ func DocGenFromPipeline(cfg *Config) error {
 
 	for _, pipeline := range renderedPipeline {
 		if pipeline.Kind == "pipeline" {
-			Blue.Printf("Pipeline - %s\n", pipeline.Metadata.Name)
+			pterm.DefaultSection.WithLevel(1).WithIndentCharacter("==").Printf("Pipeline - %s\n", pipeline.Metadata.Name)
 			fmt.Println(MarkdownToText(pipeline.Metadata.Description))
 			continue
 		}
 		if pipeline.Kind == "step" {
-			Blue.Printf("  Step - %s\n", pipeline.Metadata.Name)
+			pterm.DefaultSection.WithLevel(2).WithIndentCharacter("==").Printf("Step - %s\n", pipeline.Metadata.Name)
 			err := docGenFromStep(pipeline)
 			if err != nil {
 				return err
@@ -33,11 +34,11 @@ func DocGenFromPipeline(cfg *Config) error {
 func docGenFromStep(pipeline model.GenericYAML) error {
 	step := pipeline.ToStep()
 	for _, job := range step.Spec.Jobs {
-		Yellow.Println("    Pre condition")
+		pterm.DefaultSection.WithLevel(3).WithIndentCharacter("==").Println("Pre condition")
 		fmt.Println(MarkdownToText(job.PreCondition.Description))
-		Yellow.Println("    Action")
+		pterm.DefaultSection.WithLevel(3).WithIndentCharacter("==").Println("Action")
 		fmt.Println(MarkdownToText(job.Action.Description))
-		Yellow.Println("    Error Handling")
+		pterm.DefaultSection.WithLevel(3).WithIndentCharacter("==").Println("Error Handling")
 		fmt.Println(MarkdownToText(job.ErrorHandling.Description))
 	}
 	return nil

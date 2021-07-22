@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/dzou-hpe/yapl/util"
@@ -83,7 +84,7 @@ func main() {
 	}
 	err := app.Run(os.Args)
 	if err != nil {
-		os.Exit(1) //log.Fatal(err)
+		log.Fatal(err)
 	}
 }
 
