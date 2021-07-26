@@ -41,14 +41,15 @@ func runCommand(cmd string) error {
 		command = exec.Command("sh", "-cx", cmd)
 	}
 	command.Stdin = os.Stdin
-	command.Stdout = os.Stdout
+	command.Stdout = nil //os.Stdout
 	command.Stderr = os.Stderr
 
 	return command.Run()
 }
 
 func executePipeline(pipeline model.GenericYAML) error {
-	pterm.FgBlue.Printf("==> Pipeline: %s \n", pipeline.Metadata.Name)
+
+	pterm.DefaultHeader.Printf("Pipeline: %s \n", pipeline.Metadata.Name)
 	if debug {
 		fmt.Println(MarkdownToText(pipeline.Metadata.Description))
 	}
@@ -56,41 +57,52 @@ func executePipeline(pipeline model.GenericYAML) error {
 }
 
 func executeStep(pipeline model.GenericYAML) error {
-	// Print a section with level two.
-	pterm.FgBlue.Printf("======> Step: %s \n", pipeline.Metadata.Name)
 	if debug {
+		pterm.Info.Printf("Step: %s \n", pipeline.Metadata.Name)
 		fmt.Println(MarkdownToText(pipeline.Metadata.Description))
 	}
 	step := pipeline.ToStep()
 	for _, job := range step.Spec.Jobs {
-		pterm.FgBlue.Println("==========> job:")
-		pterm.FgYellow.Println("==============> Precondition")
+		pterm.Info.Printf("Step: %s \n  Job: %s\n  Target host:%s\n", pipeline.Metadata.Name, job.Name, job.TargetHost)
+
+		preConditionSpinner, _ := pterm.DefaultSpinner.Start("Checking Precondition ...")
 		if debug {
 			fmt.Println(MarkdownToText(job.PreCondition.Description))
 		}
 		err := runCommand(job.PreCondition.Command)
 		if err != nil {
+			preConditionSpinner.Fail()
 			pterm.FgRed.Println("ERROR: Pre condition failed, stop pipeline")
+			fmt.Println(MarkdownToText(job.PreCondition.Troubleshooting))
 			return err
 		}
-		pterm.FgGreen.Println("==============> Precondition: Done")
+		preConditionSpinner.Success()
 
-		pterm.FgYellow.Println("==============> Action")
+		actionSpinner, _ := pterm.DefaultSpinner.Start("Executing Action ...")
 		if debug {
 			fmt.Println(MarkdownToText(job.Action.Description))
 		}
 		err = runCommand(job.Action.Command)
 		if err != nil {
-			pterm.FgBlue.Println("==============> Error Handling")
-			runCommand(job.ErrorHandling.Command)
-			pterm.FgGreen.Println("==============> Error Handling: Done")
-			pterm.FgRed.Println("==============> Action: ERROR, Action failed!!! Error handling has been executed")
-			fmt.Println()
+			actionSpinner.Fail()
 			pterm.FgRed.Println("Check the doc below for troubleshooting:")
-			fmt.Println(MarkdownToText(job.ErrorHandling.Description))
+			fmt.Println(MarkdownToText(job.Action.Troubleshooting))
 			return err
 		}
-		pterm.FgGreen.Println("==============> Action: Done")
+		actionSpinner.Success()
+
+		postValidationSpinner, _ := pterm.DefaultSpinner.Start("Post action validation ...")
+		if debug {
+			fmt.Println(MarkdownToText(job.PostValidation.Description))
+		}
+		err = runCommand(job.PostValidation.Command)
+		if err != nil {
+			postValidationSpinner.Fail()
+			pterm.FgRed.Println("Check the doc below for troubleshooting:")
+			fmt.Println(MarkdownToText(job.PostValidation.Troubleshooting))
+			return err
+		}
+		postValidationSpinner.Success()
 
 	}
 	return nil

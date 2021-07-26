@@ -38,8 +38,8 @@ func docGenFromStep(pipeline model.GenericYAML) error {
 		fmt.Println(MarkdownToText(job.PreCondition.Description))
 		pterm.DefaultSection.WithLevel(3).WithIndentCharacter("==").Println("Action")
 		fmt.Println(MarkdownToText(job.Action.Description))
-		pterm.DefaultSection.WithLevel(3).WithIndentCharacter("==").Println("Error Handling")
-		fmt.Println(MarkdownToText(job.ErrorHandling.Description))
+		pterm.DefaultSection.WithLevel(3).WithIndentCharacter("==").Println("Post Validation")
+		fmt.Println(MarkdownToText(job.PostValidation.Description))
 	}
 	return nil
 }

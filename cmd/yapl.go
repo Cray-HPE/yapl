@@ -7,6 +7,7 @@ import (
 
 	"github.com/dzou-hpe/yapl/util"
 	"github.com/fatih/color"
+	"github.com/pterm/pterm"
 	"github.com/urfave/cli"
 )
 
@@ -99,6 +100,7 @@ func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 
 	if cfg.NoColor {
 		color.NoColor = true
+		pterm.DisableColor()
 	}
 
 	return cfg

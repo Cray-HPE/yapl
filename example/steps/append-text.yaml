@@ -20,7 +20,7 @@ spec:
           sleep $[ ( $RANDOM % 3 )  + 1 ]s
           echo "lalalala" >> /tmp/demo.txt
           echo "lalalala is appened to /tmp/demo.txt"
-      errorHandling:
+      postValidation:
         description: |-
           # WTH
           this is `me failing english? umpossible` moment

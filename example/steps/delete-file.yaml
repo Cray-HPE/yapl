@@ -13,7 +13,7 @@ spec:
           Eget felis eget nunc lobortis mattis aliquam faucibus purus in. Vulputate enim nulla aliquet porttitor lacus luctus accumsan tortor posuere. Ultrices dui sapien eget mi proin sed. Neque aliquam vestibulum morbi blandit cursus risus at ultrices. Etiam dignissim diam quis enim lobortis scelerisque fermentum dui. Nulla posuere sollicitudin aliquam ultrices sagittis. Urna nec tincidunt praesent semper. Enim nunc faucibus a pellentesque sit. Pellentesque sit amet porttitor eget dolor morbi. Arcu risus quis varius quam quisque id. Tempor nec feugiat nisl pretium. Accumsan in nisl nisi scelerisque eu ultrices vitae. Ac tortor vitae purus faucibus ornare suspendisse sed nisi. Orci nulla pellentesque dignissim enim. In hac habitasse platea dictumst quisque sagittis purus sit. Netus et malesuada fames ac.
         command: ''
       action:
-        description: |-
+        troubleshooting: |-
           use `rm` cmd to delete a file 
 
           Eget felis eget nunc lobortis mattis aliquam faucibus purus in. Vulputate enim nulla aliquet porttitor lacus luctus accumsan tortor posuere. Ultrices dui sapien eget mi proin sed. Neque aliquam vestibulum morbi blandit cursus risus at ultrices. Etiam dignissim diam quis enim lobortis scelerisque fermentum dui. Nulla posuere sollicitudin aliquam ultrices sagittis. Urna nec tincidunt praesent semper. Enim nunc faucibus a pellentesque sit. Pellentesque sit amet porttitor eget dolor morbi. Arcu risus quis varius quam quisque id. Tempor nec feugiat nisl pretium. Accumsan in nisl nisi scelerisque eu ultrices vitae. Ac tortor vitae purus faucibus ornare suspendisse sed nisi. Orci nulla pellentesque dignissim enim. In hac habitasse platea dictumst quisque sagittis purus sit. Netus et malesuada fames ac.
@@ -22,7 +22,7 @@ spec:
           rm /tmp/demo.txt
           sleep $[ ( $RANDOM % 3 )  + 1 ]s
           echo "/tmp/demo.txt is deleted"
-      errorHandling:
+      postValidation:
         description: |-
           # WTH
           this is `me failing english? umpossible` moment

@@ -10,16 +10,17 @@ type JobsMap struct {
 	Jobs []Job `yaml:"jobs,omitempty"`
 }
 type Job struct {
-	// Name          string   `yaml:"name,omitempty"`
-	// TargetHost    string   `yaml:"targetHost,omitempty"`
-	PreCondition  Runnable `yaml:"preCondition,omitempty"`
-	Action        Runnable `yaml:"action,omitempty"`
-	ErrorHandling Runnable `yaml:"errorHandling,omitempty"`
+	Name           string   `yaml:"name"`
+	TargetHost     string   `yaml:"targetHost,omitempty"`
+	PreCondition   Runnable `yaml:"preCondition,omitempty"`
+	Action         Runnable `yaml:"action,omitempty"`
+	PostValidation Runnable `yaml:"postValidation,omitempty"`
 }
 
 type Runnable struct {
-	Description string `yaml:"description,omitempty"`
-	Command     string `yaml:"command,omitempty"`
+	Description     string `yaml:"description,omitempty"`
+	Command         string `yaml:"command,omitempty"`
+	Troubleshooting string `yaml:"troubleshooting,omitempty"`
 }
 
 func NewStep() *Step {
