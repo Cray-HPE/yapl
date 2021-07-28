@@ -38,5 +38,4 @@ func docGenFromStep(pipeline model.GenericYAML) {
 		pterm.DefaultSection.WithLevel(3).WithIndentCharacter("==").Println("Post Validation")
 		fmt.Println(MarkdownToText(job.PostValidation.Description))
 	}
-	return
 }

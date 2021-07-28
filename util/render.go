@@ -19,8 +19,7 @@ func RenderPipeline(cfg *Config) ([]model.GenericYAML, error) {
 	renderedPipeline = []model.GenericYAML{}
 
 	validate = validator.New()
-	var err error
-	currentTemplateFilter, err = NewTemplateFilter(cfg.Vars)
+	currentTemplateFilter, _ = NewTemplateFilter(cfg.Vars)
 
 	tmpYaml, err := readYAML(cfg.File)
 	if err != nil {
