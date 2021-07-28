@@ -59,61 +59,49 @@ func executePipeline(pipeline model.GenericYAML) error {
 }
 
 func executeStep(pipeline model.GenericYAML) error {
-	if debug {
-		pterm.Info.Printf("Step: %s \n", pipeline.Metadata.Name)
-		fmt.Println(MarkdownToText(pipeline.Metadata.Description))
-	}
 	step, _ := pipeline.ToStep()
 	for _, job := range step.Spec.Jobs {
 		fmt.Println()
 		pterm.Info.Printf("Step: %s\n", pipeline.Metadata.Name)
-
-		var stdoutBuf, stderrBuf bytes.Buffer
-		stdout := bufio.NewWriter(&stdoutBuf)
-		stderr := bufio.NewWriter(&stderrBuf)
-
-		preConditionSpinner, _ := pterm.DefaultSpinner.Start("Checking Precondition ...")
 		if debug {
-			fmt.Println(MarkdownToText(job.PreCondition.Description))
+			fmt.Println(MarkdownToText(pipeline.Metadata.Description))
 		}
-		err := runCommand(job.PreCondition.Command, stdout, stderr)
+		err := execute(job.PreCondition, "Checking Precondition")
 		if err != nil {
-			preConditionSpinner.Fail()
-			fmt.Println(stderrBuf.String())
-			pterm.FgRed.Println("ERROR: Pre condition failed, stop pipeline")
-			fmt.Println(MarkdownToText(job.PreCondition.Troubleshooting))
 			return err
 		}
-		preConditionSpinner.Success()
 
-		actionSpinner, _ := pterm.DefaultSpinner.Start("Executing Action ...")
-		if debug {
-			fmt.Println(MarkdownToText(job.Action.Description))
-		}
-		err = runCommand(job.Action.Command, stdout, stderr)
+		err = execute(job.Action, "Executing Action")
 		if err != nil {
-			actionSpinner.Fail()
-			fmt.Println(stderrBuf.String())
-			pterm.FgRed.Println("Check the doc below for troubleshooting:")
-			fmt.Println(MarkdownToText(job.Action.Troubleshooting))
 			return err
 		}
-		actionSpinner.Success()
 
-		postValidationSpinner, _ := pterm.DefaultSpinner.Start("Post action validation ...")
-		if debug {
-			fmt.Println(MarkdownToText(job.PostValidation.Description))
-		}
-		err = runCommand(job.PostValidation.Command, stdout, stderr)
+		err = execute(job.PostValidation, "Post action validation")
 		if err != nil {
-			postValidationSpinner.Fail()
-			fmt.Println(stderrBuf.String())
-			pterm.FgRed.Println("Check the doc below for troubleshooting:")
-			fmt.Println(MarkdownToText(job.PostValidation.Troubleshooting))
 			return err
 		}
-		postValidationSpinner.Success()
+	}
+	return nil
+}
 
+func execute(runnable model.Runnable, name string) error {
+
+	var stdoutBuf, stderrBuf bytes.Buffer
+	stdout := bufio.NewWriter(&stdoutBuf)
+	stderr := bufio.NewWriter(&stderrBuf)
+	spinner, _ := pterm.DefaultSpinner.Start(name + " ...")
+
+	err := runCommand(runnable.Command, stdout, stderr)
+	if err != nil {
+		spinner.Fail()
+		fmt.Println(stderrBuf.String())
+		pterm.FgRed.Println("Check the doc below for troubleshooting:")
+		fmt.Println(MarkdownToText(runnable.Troubleshooting))
+		return err
+	}
+	spinner.Success()
+	if debug {
+		fmt.Println(MarkdownToText(runnable.Description))
 	}
 	return nil
 }
