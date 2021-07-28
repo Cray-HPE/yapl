@@ -12,16 +12,16 @@ func NewGenericYAML() *GenericYAML {
 	return &GenericYAML{}
 }
 
-func (genericYAML *GenericYAML) ToPipeline() Pipeline {
+func (genericYAML *GenericYAML) ToPipeline() (Pipeline, error) {
 	genericYAMLBytes, _ := yaml.Marshal(genericYAML)
 	pipeline := NewPipeline()
-	yaml.Unmarshal(genericYAMLBytes, pipeline)
-	return *pipeline
+	err := yaml.Unmarshal(genericYAMLBytes, pipeline)
+	return *pipeline, err
 }
 
-func (genericYAML *GenericYAML) ToStep() Step {
+func (genericYAML *GenericYAML) ToStep() (Step, error) {
 	genericYAMLBytes, _ := yaml.Marshal(genericYAML)
 	step := NewStep()
-	yaml.Unmarshal(genericYAMLBytes, step)
-	return *step
+	err := yaml.Unmarshal(genericYAMLBytes, step)
+	return *step, err
 }

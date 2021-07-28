@@ -6,7 +6,8 @@ metadata:
 spec:
   jobs:
     - preCondition:
-        description: 
+        description: |-
+          this is a pre condition
         command: |-
           reqSpace=100000000 # ~100GB 
           availSpace=$(df "$HOME" | awk 'NR==2 { print $4 }')
@@ -16,7 +17,11 @@ spec:
           fi
           sleep $[ ( $RANDOM % 3 )  + 1 ]s
           echo "Enough space"
+        troubleshooting: |-
+          this is troubleshooting
       action:
+        troubleshooting: |-
+          this is troubleshooting
         description: |-
           # Create file
           use `touch` cmd to create a file 
@@ -24,8 +29,10 @@ spec:
           touch /tmp/demo.txt
           sleep $[ ( $RANDOM % 3 )  + 1 ]s
           echo "/tmp/demo.txt is created"
-      errorHandling:
+      postValidation:
         description: |-
           # WTH
           this is `me failing english? umpossible` moment
         command: sh -c 'echo "HELP...."'
+        troubleshooting: |-
+          this is troubleshooting

@@ -6,14 +6,19 @@ import (
 	"path/filepath"
 
 	"github.com/dzou-hpe/yapl/model"
+	"github.com/pterm/pterm"
+	"gopkg.in/go-playground/validator.v9"
 	"gopkg.in/yaml.v2"
 )
 
 var renderedPipeline []model.GenericYAML
 var currentTemplateFilter TemplateFilter
+var validate *validator.Validate
 
 func RenderPipeline(cfg *Config) ([]model.GenericYAML, error) {
 	renderedPipeline = []model.GenericYAML{}
+
+	validate = validator.New()
 	var err error
 	currentTemplateFilter, err = NewTemplateFilter(cfg.Vars)
 
@@ -83,7 +88,7 @@ func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error 
 		return fmt.Errorf("max depth of 50 reached, possibly due to dependency loop in goss file")
 	}
 
-	pipeline := genericYAML.ToPipeline()
+	pipeline, _ := genericYAML.ToPipeline()
 
 	for _, step := range pipeline.Spec.Steps {
 		fpath := filepath.Join(path, step)
@@ -101,6 +106,12 @@ func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error 
 				return fmt.Errorf("could not read json data in %s: %s", match, err)
 			}
 			j.Metadata.Parent = genericYAML.Metadata.Name
+			err = validateAndFillDefaultValues(&j)
+			if err != nil {
+				pterm.Error.Printf("ERROR: validation error in: %s\n", match)
+				return err
+			}
+
 			err = mergeYAMLData(j, depth, fdir)
 			if err != nil {
 				return err
@@ -108,4 +119,22 @@ func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error 
 		}
 	}
 	return nil
+}
+
+func validateAndFillDefaultValues(genericYAML *model.GenericYAML) error {
+	switch genericYAML.Kind {
+	case "pipeline":
+		_, err := genericYAML.ToPipeline()
+		return err
+	case "step":
+		stepYaml, err := genericYAML.ToStep()
+		if err != nil {
+			return err
+		}
+
+		err = validate.Struct(stepYaml)
+		return err
+	default:
+		return fmt.Errorf("ERROR: Kind Must Be pipeline or step, get: %s", genericYAML.Kind)
+	}
 }

@@ -21,18 +21,15 @@ func DocGenFromPipeline(cfg *Config) error {
 		}
 		if pipeline.Kind == "step" {
 			pterm.DefaultSection.WithLevel(2).WithIndentCharacter("==").Printf("Step - %s\n", pipeline.Metadata.Name)
-			err := docGenFromStep(pipeline)
-			if err != nil {
-				return err
-			}
+			docGenFromStep(pipeline)
 			continue
 		}
 	}
 	return nil
 }
 
-func docGenFromStep(pipeline model.GenericYAML) error {
-	step := pipeline.ToStep()
+func docGenFromStep(pipeline model.GenericYAML) {
+	step, _ := pipeline.ToStep()
 	for _, job := range step.Spec.Jobs {
 		pterm.DefaultSection.WithLevel(3).WithIndentCharacter("==").Println("Pre condition")
 		fmt.Println(MarkdownToText(job.PreCondition.Description))
@@ -41,5 +38,5 @@ func docGenFromStep(pipeline model.GenericYAML) error {
 		pterm.DefaultSection.WithLevel(3).WithIndentCharacter("==").Println("Post Validation")
 		fmt.Println(MarkdownToText(job.PostValidation.Description))
 	}
-	return nil
+	return
 }

@@ -12,6 +12,8 @@ spec:
           
           Eget felis eget nunc lobortis mattis aliquam faucibus purus in. Vulputate enim nulla aliquet porttitor lacus luctus accumsan tortor posuere. Ultrices dui sapien eget mi proin sed. Neque aliquam vestibulum morbi blandit cursus risus at ultrices. Etiam dignissim diam quis enim lobortis scelerisque fermentum dui. Nulla posuere sollicitudin aliquam ultrices sagittis. Urna nec tincidunt praesent semper. Enim nunc faucibus a pellentesque sit. Pellentesque sit amet porttitor eget dolor morbi. Arcu risus quis varius quam quisque id. Tempor nec feugiat nisl pretium. Accumsan in nisl nisi scelerisque eu ultrices vitae. Ac tortor vitae purus faucibus ornare suspendisse sed nisi. Orci nulla pellentesque dignissim enim. In hac habitasse platea dictumst quisque sagittis purus sit. Netus et malesuada fames ac.
         command: ''
+        troubleshooting: |-
+          this is troubleshooting
       action:
         troubleshooting: |-
           use `rm` cmd to delete a file 
@@ -22,6 +24,8 @@ spec:
           rm /tmp/demo.txt
           sleep $[ ( $RANDOM % 3 )  + 1 ]s
           echo "/tmp/demo.txt is deleted"
+        description: |-
+          this is troubleshooting
       postValidation:
         description: |-
           # WTH
@@ -33,3 +37,5 @@ spec:
 
           Facilisi nullam vehicula ipsum a. Viverra nibh cras pulvinar mattis nunc sed blandit libero volutpat. Venenatis a condimentum vitae sapien. Eget gravida cum sociis natoque penatibus et magnis dis. Faucibus interdum posuere lorem ipsum dolor sit amet consectetur adipiscing. Ac odio tempor orci dapibus ultrices. Maecenas volutpat blandit aliquam etiam erat. Viverra tellus in hac habitasse platea dictumst vestibulum rhoncus est. Volutpat est velit egestas dui id. Vel pharetra vel turpis nunc eget lorem dolor sed viverra. Aliquam nulla facilisi cras fermentum odio. Faucibus pulvinar elementum integer enim. Condimentum lacinia quis vel eros donec ac odio tempor orci. Nec nam aliquam sem et tortor consequat id porta nibh.
         command: sh -c 'echo "HELP...."'
+        troubleshooting: |-
+          this is troubleshooting

@@ -1,8 +1,10 @@
 package util
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
-	"os"
+	"io"
 	"os/exec"
 
 	"github.com/dzou-hpe/yapl/model"
@@ -35,14 +37,14 @@ func ExecutePipeline(cfg *Config) error {
 	return nil
 }
 
-func runCommand(cmd string) error {
+func runCommand(cmd string, stdout io.Writer, stderr io.Writer) error {
 	command := exec.Command("sh", "-c", cmd)
 	if debug {
 		command = exec.Command("sh", "-cx", cmd)
 	}
-	command.Stdin = os.Stdin
-	command.Stdout = nil //os.Stdout
-	command.Stderr = os.Stderr
+	command.Stdin = nil
+	command.Stdout = stdout
+	command.Stderr = stderr
 
 	return command.Run()
 }
@@ -61,17 +63,23 @@ func executeStep(pipeline model.GenericYAML) error {
 		pterm.Info.Printf("Step: %s \n", pipeline.Metadata.Name)
 		fmt.Println(MarkdownToText(pipeline.Metadata.Description))
 	}
-	step := pipeline.ToStep()
+	step, _ := pipeline.ToStep()
 	for _, job := range step.Spec.Jobs {
-		pterm.Info.Printf("Step: %s \n  Job: %s\n  Target host:%s\n", pipeline.Metadata.Name, job.Name, job.TargetHost)
+		fmt.Println()
+		pterm.Info.Printf("Step: %s\n", pipeline.Metadata.Name)
+
+		var stdoutBuf, stderrBuf bytes.Buffer
+		stdout := bufio.NewWriter(&stdoutBuf)
+		stderr := bufio.NewWriter(&stderrBuf)
 
 		preConditionSpinner, _ := pterm.DefaultSpinner.Start("Checking Precondition ...")
 		if debug {
 			fmt.Println(MarkdownToText(job.PreCondition.Description))
 		}
-		err := runCommand(job.PreCondition.Command)
+		err := runCommand(job.PreCondition.Command, stdout, stderr)
 		if err != nil {
 			preConditionSpinner.Fail()
+			fmt.Println(stderrBuf.String())
 			pterm.FgRed.Println("ERROR: Pre condition failed, stop pipeline")
 			fmt.Println(MarkdownToText(job.PreCondition.Troubleshooting))
 			return err
@@ -82,9 +90,10 @@ func executeStep(pipeline model.GenericYAML) error {
 		if debug {
 			fmt.Println(MarkdownToText(job.Action.Description))
 		}
-		err = runCommand(job.Action.Command)
+		err = runCommand(job.Action.Command, stdout, stderr)
 		if err != nil {
 			actionSpinner.Fail()
+			fmt.Println(stderrBuf.String())
 			pterm.FgRed.Println("Check the doc below for troubleshooting:")
 			fmt.Println(MarkdownToText(job.Action.Troubleshooting))
 			return err
@@ -95,9 +104,10 @@ func executeStep(pipeline model.GenericYAML) error {
 		if debug {
 			fmt.Println(MarkdownToText(job.PostValidation.Description))
 		}
-		err = runCommand(job.PostValidation.Command)
+		err = runCommand(job.PostValidation.Command, stdout, stderr)
 		if err != nil {
 			postValidationSpinner.Fail()
+			fmt.Println(stderrBuf.String())
 			pterm.FgRed.Println("Check the doc below for troubleshooting:")
 			fmt.Println(MarkdownToText(job.PostValidation.Troubleshooting))
 			return err
