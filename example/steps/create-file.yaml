@@ -25,10 +25,7 @@ spec:
         description: |-
           # Create file
           use `touch` cmd to create a file 
-        command: |-
-          touch /tmp/demo.txt
-          sleep $[ ( $RANDOM % 3 )  + 1 ]s
-          echo "/tmp/demo.txt is created"
+        command: /Users/dzou/git/yapl/example/scripts/createFile.sh
       postValidation:
         description: |-
           # WTH

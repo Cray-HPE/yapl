@@ -1,6 +1,7 @@
 package util
 
 import (
+	"crypto/md5"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
@@ -62,7 +63,7 @@ func readYAMLData(data []byte) (model.GenericYAML, error) {
 	if err := unmarshalYAML(data, genericYAML); err != nil {
 		return *genericYAML, err
 	}
-
+	genericYAML.Metadata.Id = fmt.Sprintf("%x", md5.Sum(data))
 	return *genericYAML, nil
 }
 
@@ -104,7 +105,7 @@ func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error 
 			if err != nil {
 				return fmt.Errorf("could not read json data in %s: %s", match, err)
 			}
-			j.Metadata.Parent = genericYAML.Metadata.Name
+			j.Metadata.Parent = genericYAML.Metadata.Id
 			err = validateAndFillDefaultValues(&j)
 			if err != nil {
 				pterm.Error.Printf("ERROR: validation error in: %s\n", match)

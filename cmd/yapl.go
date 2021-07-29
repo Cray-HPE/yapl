@@ -82,6 +82,17 @@ func main() {
 				return nil
 			},
 		},
+		{
+			Name:  "dep",
+			Usage: "generate dependency graph after imports",
+			Action: func(c *cli.Context) error {
+				err := util.DepGenFromPipeline(newRuntimeConfigFromCLI(c))
+				if err != nil {
+					return err
+				}
+				return nil
+			},
+		},
 	}
 	err := app.Run(os.Args)
 	if err != nil {
