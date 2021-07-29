@@ -63,7 +63,6 @@ func readYAMLData(data []byte) (model.GenericYAML, error) {
 	if err := unmarshalYAML(data, genericYAML); err != nil {
 		return *genericYAML, err
 	}
-	genericYAML.Metadata.Id = fmt.Sprintf("%x", md5.Sum(data))
 	return *genericYAML, nil
 }
 
@@ -77,6 +76,9 @@ func unmarshalYAML(data []byte, v interface{}) error {
 }
 
 func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error {
+	genericYAML.Metadata.OrderId = len(renderedPipeline)
+	data, _ := yaml.Marshal(genericYAML)
+	genericYAML.Metadata.Id = fmt.Sprintf("%x", md5.Sum(data))
 	renderedPipeline = append(renderedPipeline, genericYAML)
 
 	if genericYAML.Kind == "step" {

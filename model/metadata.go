@@ -5,4 +5,5 @@ type Metadata struct {
 	Description string `yaml:"description,omitempty"`
 	Parent      string `yaml:"parent,omitempty"`
 	Id          string
+	OrderId     int
 }

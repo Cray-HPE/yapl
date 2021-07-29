@@ -49,7 +49,7 @@ func buildGraph(genericPipeline model.GenericYAML) {
 	} else {
 		node.SetShape("box")
 	}
-	node.SetLabel(genericPipeline.Metadata.Name)
+	node.SetLabel(fmt.Sprintf("#%d - %s", genericPipeline.Metadata.OrderId, genericPipeline.Metadata.Name))
 	node.SetTooltip(genericPipeline.Metadata.Description)
 
 	nodes[genericPipeline.Metadata.Id] = *node
