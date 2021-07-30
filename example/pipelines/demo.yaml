@@ -44,4 +44,3 @@ spec:
     - ../steps/append-text.yaml
     - ../steps/delete-file.yaml
     - ../steps/delete-file.yaml
-    - ./simple.yaml
