@@ -28,4 +28,3 @@ metadata:
     
 spec:
   steps: 
-    - ../steps/create-file-all-hosts.yaml
