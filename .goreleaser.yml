@@ -11,6 +11,8 @@ builds:
     goos:
       - linux
       - darwin
+    goarch:
+      - amd64
 archives:
   - replacements:
       darwin: Darwin
