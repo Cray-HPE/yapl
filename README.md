@@ -38,3 +38,9 @@ GLOBAL OPTIONS:
    --no-color              
    --help, -h              show help
 ```
+## Road Map
+- [x] Pipeline: should be able to import/reuse another pipeline
+- [x] Render: Go template support 
+- [x] Execute: basic workflow
+- [x] Dependency graph: Generate dot graph
+- [ ] Doc: should be able to generate doc from pipeline/step definitions
