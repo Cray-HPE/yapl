@@ -7,7 +7,7 @@ import (
 	"io"
 	"os/exec"
 
-	"github.com/dzou-hpe/yapl/model"
+	"github.com/Cray-HPE/yapl/model"
 	"github.com/pterm/pterm"
 )
 

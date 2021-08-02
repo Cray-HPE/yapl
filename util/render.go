@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"github.com/dzou-hpe/yapl/model"
+	"github.com/Cray-HPE/yapl/model"
 	"github.com/pterm/pterm"
 	"gopkg.in/go-playground/validator.v9"
 	"gopkg.in/yaml.v2"

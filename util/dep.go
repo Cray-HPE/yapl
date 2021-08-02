@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/dzou-hpe/yapl/model"
+	"github.com/Cray-HPE/yapl/model"
 	"github.com/goccy/go-graphviz"
 	"github.com/goccy/go-graphviz/cgraph"
 )

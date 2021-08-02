@@ -5,7 +5,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/dzou-hpe/yapl/model"
+	"github.com/Cray-HPE/yapl/model"
 	"github.com/stretchr/testify/assert"
 )
 

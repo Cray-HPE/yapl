@@ -9,7 +9,7 @@ spec:
         description: |-
           this is a pre condition
         command: |-
-          reqSpace=100000000 # ~100GB 
+          reqSpace=100000000 # ~100GB
           availSpace=$(df "$HOME" | awk 'NR==2 { print $4 }')
           if (( availSpace < reqSpace )); then
               echo "Not enough space, required: $reqSpace, available space: $availSpace" >&2
@@ -24,8 +24,8 @@ spec:
           this is troubleshooting
         description: |-
           # Create file
-          use `touch` cmd to create a file 
-        command: /Users/dzou/git/yapl/example/scripts/createFile.sh
+          use `touch` cmd to create a file
+        command: example/scripts/createFile.sh
       postValidation:
         description: |-
           # WTH
