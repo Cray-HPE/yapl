@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/dzou-hpe/yapl/util"
+	"github.com/Cray-HPE/yapl/util"
 	"github.com/fatih/color"
 	"github.com/pterm/pterm"
 	"github.com/urfave/cli"

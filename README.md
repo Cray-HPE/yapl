@@ -8,14 +8,19 @@ Yet Another Pipeline Language
 Goss is a Yaml based pipeline orchestration tool for executing/managing pipeline workflows. It is best suited for a complicated installation process that involves many moving parts
 
 ### Why YAPL
-- You can embed your user manual into your pipeline definition. When things go sideway, you can show rendered markdown doc that tells your customer what to do in the same terminal console.
+
+- You can embed your user manual into your pipeline definition. When things go sideways, you can show rendered markdown doc that tells your customer what to do in the same terminal console.
 - You can visualize your pipeline in a bird's view. It helps you to understand where can you optimize your flow.
 - You can visualize progress of pipeline executing in a very complicated process
-- You can define reuseable `Step` that can be imported anywhere
+- You can define a reusable `Step` that can be imported anywhere
 
-## Quick Start
-check [example](example/pipelines/demo.yaml) here
-It is a simple pipeline that has 4 steps and also imports another pipeline
+## Quick Start Example
+
+Check the [example](example/pipelines/demo.yaml) here.  It is a simple pipeline that has 4 steps and also imports another pipeline.
+
+```bash
+go run cmd/yapl.go -f example/pipelines/demo.yaml --vars example/vars.yaml execute
+```
 
 ## Usage
 ```
@@ -40,7 +45,7 @@ GLOBAL OPTIONS:
 ```
 ## Road Map
 - [x] Pipeline: should be able to import/reuse another pipeline
-- [x] Render: Go template support 
+- [x] Render: Go template support
 - [x] Execute: basic workflow
 - [x] Dependency graph: Generate dot graph
 - [ ] Doc: should be able to generate doc from pipeline/step definitions

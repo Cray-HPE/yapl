@@ -1,4 +1,4 @@
-module github.com/dzou-hpe/yapl
+module github.com/Cray-HPE/yapl
 
 go 1.16
 
