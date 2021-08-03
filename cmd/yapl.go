@@ -60,7 +60,7 @@ func main() {
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "debug, d",
-					Usage: fmt.Sprintf("Print debugging info when rendering"),
+					Usage: fmt.Sprintf("Print debugging info when executing"),
 				},
 			},
 			Action: func(c *cli.Context) error {
@@ -74,6 +74,12 @@ func main() {
 		{
 			Name:  "doc",
 			Usage: "generate doc after imports",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "debug, d",
+					Usage: fmt.Sprintf("Print debugging info when generating doc"),
+				},
+			},
 			Action: func(c *cli.Context) error {
 				err := util.DocGenFromPipeline(newRuntimeConfigFromCLI(c))
 				if err != nil {
@@ -112,6 +118,11 @@ func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 	if cfg.NoColor {
 		color.NoColor = true
 		pterm.DisableColor()
+	}
+	if cfg.Debug {
+		pterm.EnableDebugMessages()
+	} else {
+		pterm.DisableDebugMessages()
 	}
 
 	return cfg

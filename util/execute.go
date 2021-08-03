@@ -52,9 +52,7 @@ func runCommand(cmd string, stdout io.Writer, stderr io.Writer) error {
 func executePipeline(pipeline model.GenericYAML) error {
 
 	pterm.DefaultHeader.Printf("Pipeline: %s \n", pipeline.Metadata.Name)
-	if debug {
-		fmt.Println(MarkdownToText(pipeline.Metadata.Description))
-	}
+	pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
 	return nil
 }
 
@@ -63,9 +61,8 @@ func executeStep(pipeline model.GenericYAML) error {
 	for _, job := range step.Spec.Jobs {
 		fmt.Println()
 		pterm.Info.Printf("Step: %s\n", pipeline.Metadata.Name)
-		if debug {
-			fmt.Println(MarkdownToText(pipeline.Metadata.Description))
-		}
+		pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
+
 		err := execute(job.PreCondition, "Checking Precondition")
 		if err != nil {
 			return err
@@ -100,8 +97,6 @@ func execute(runnable model.Runnable, name string) error {
 		return err
 	}
 	spinner.Success()
-	if debug {
-		fmt.Println(MarkdownToText(runnable.Description))
-	}
+	pterm.Debug.Println(MarkdownToText(runnable.Description))
 	return nil
 }

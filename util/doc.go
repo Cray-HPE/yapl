@@ -1,8 +1,6 @@
 package util
 
 import (
-	"fmt"
-
 	"github.com/Cray-HPE/yapl/model"
 	"github.com/pterm/pterm"
 )
@@ -15,12 +13,12 @@ func DocGenFromPipeline(cfg *Config) error {
 
 	for _, pipeline := range renderedPipeline {
 		if pipeline.Kind == "pipeline" {
-			pterm.DefaultSection.WithLevel(1).WithIndentCharacter("==").Printf("Pipeline - %s\n", pipeline.Metadata.Name)
-			fmt.Println(MarkdownToText(pipeline.Metadata.Description))
+			pterm.Debug.Println(pterm.DefaultSection.WithLevel(1).WithIndentCharacter("==").Sprintf("Pipeline - %s\n", pipeline.Metadata.Name))
+			pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
 			continue
 		}
 		if pipeline.Kind == "step" {
-			pterm.DefaultSection.WithLevel(2).WithIndentCharacter("==").Printf("Step - %s\n", pipeline.Metadata.Name)
+			pterm.Debug.Println(pterm.DefaultSection.WithLevel(2).WithIndentCharacter("==").Sprintf("Step - %s\n", pipeline.Metadata.Name))
 			docGenFromStep(pipeline)
 			continue
 		}
@@ -31,11 +29,11 @@ func DocGenFromPipeline(cfg *Config) error {
 func docGenFromStep(pipeline model.GenericYAML) {
 	step, _ := pipeline.ToStep()
 	for _, job := range step.Spec.Jobs {
-		pterm.DefaultSection.WithLevel(3).WithIndentCharacter("==").Println("Pre condition")
-		fmt.Println(MarkdownToText(job.PreCondition.Description))
-		pterm.DefaultSection.WithLevel(3).WithIndentCharacter("==").Println("Action")
-		fmt.Println(MarkdownToText(job.Action.Description))
-		pterm.DefaultSection.WithLevel(3).WithIndentCharacter("==").Println("Post Validation")
-		fmt.Println(MarkdownToText(job.PostValidation.Description))
+		pterm.Debug.Println(pterm.DefaultSection.WithLevel(3).WithIndentCharacter("==").Sprint("Pre condition\n"))
+		pterm.Debug.Println(MarkdownToText(job.PreCondition.Description))
+		pterm.Debug.Println(pterm.DefaultSection.WithLevel(3).WithIndentCharacter("==").Sprint("Action\n"))
+		pterm.Debug.Println(MarkdownToText(job.Action.Description))
+		pterm.Debug.Println(pterm.DefaultSection.WithLevel(3).WithIndentCharacter("==").Sprint("Post Validation\n"))
+		pterm.Debug.Println(MarkdownToText(job.PostValidation.Description))
 	}
 }
