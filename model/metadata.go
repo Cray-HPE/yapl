@@ -7,4 +7,5 @@ type Metadata struct {
 	Id          string
 	OrderId     int
 	Children    []int
+	Completed   bool
 }
