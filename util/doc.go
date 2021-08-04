@@ -3,12 +3,14 @@ package util
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/Cray-HPE/yapl/model"
 	"github.com/pterm/pterm"
 )
 
 var outputDir string
+var p *pterm.ProgressbarPrinter
 
 func DocGenFromPipeline(cfg *Config) error {
 	outputDir = cfg.OutputDir
@@ -17,6 +19,8 @@ func DocGenFromPipeline(cfg *Config) error {
 	if err != nil {
 		return err
 	}
+	// Create progressbar as fork from the default progressbar.
+	p, _ = pterm.DefaultProgressbar.WithTotal(len(renderedPipeline)).WithTitle("Generating Documents").Start()
 
 	for _, pipeline := range renderedPipeline {
 		if pipeline.Kind == "pipeline" {
@@ -50,6 +54,8 @@ func docGenFromStep(pipeline model.GenericYAML) {
 }
 
 func writeDocToFile(filename string, content string) error {
+	p.Title = "Generating: " + filename
+	pterm.Success.Println("Generated: " + filename)
 	f, err := os.Create(outputDir + "/" + filename + ".md")
 	if err != nil {
 		return err
@@ -61,5 +67,7 @@ func writeDocToFile(filename string, content string) error {
 	if err != nil {
 		return err
 	}
+	p.Increment()
+	time.Sleep(time.Millisecond * 350)
 	return nil
 }
