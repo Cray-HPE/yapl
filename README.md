@@ -1,3 +1,4 @@
+[![Go](https://github.com/Cray-HPE/yapl/actions/workflows/go.yml/badge.svg)](https://github.com/Cray-HPE/yapl/actions/workflows/go.yml)
 # yapl
 Yet Another Pipeline Language
 
