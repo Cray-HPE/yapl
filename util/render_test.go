@@ -32,8 +32,9 @@ func Test_RenderPipeline(t *testing.T) {
 					Metadata: model.Metadata{
 						Name:        "Simple Pipeline",
 						Description: "# Simple pipeline\nThis is a simple pipeline that does nothing\n\nIt is just an exmaple of what the framework can do\n## Hello\nEget felis eget nunc lobortis mattis aliquam faucibus purus in. Vulputate\nenim nulla aliquet porttitor lacus luctus accumsan tortor posuere.\nUltrices dui sapien eget mi proin sed. Neque aliquam vestibulum morbi\nblandit cursus risus at ultrices. Etiam dignissim diam quis enim lobortis\nscelerisque fermentum dui. Nulla posuere sollicitudin aliquam ultrices\nsagittis. Urna nec tincidunt praesent semper. Enim nunc faucibus a\npellentesque sit.\n\n## Bye\nEget felis eget nunc lobortis mattis aliquam faucibus purus in. Vulputate\nenim nulla aliquet porttitor lacus luctus accumsan tortor posuere.\nUltrices dui sapien eget mi proin sed. Neque aliquam vestibulum morbi\nblandit cursus risus at ultrices. Etiam dignissim diam quis enim lobortis\nscelerisque fermentum dui. Nulla posuere sollicitudin aliquam ultrices\nsagittis. Urna nec tincidunt praesent semper. Enim nunc faucibus a\npellentesque sit.\n\n![logo](https://ca.slack-edge.com/E01LD9FH0JZ-U01T66ZG20J-369a4b616e69-72)",
-						Id:          "f4fa570d4735f2ee74081b1add49d131",
+						Id:          "748e01de33d05b250785ae5d321d3ad6",
 						OrderId:     0,
+						Completed:   false,
 					},
 					Spec: map[string]interface{}{
 						"steps": nil,
@@ -54,8 +55,9 @@ func Test_RenderPipeline(t *testing.T) {
 					Metadata: model.Metadata{
 						Name:        "Demo Pipeline",
 						Description: "# Demo pipeline\nThis is a demo pipeline that does some simple file operations\n\nIt is just an exmaple of what the framework can do\n## create file\nEget felis eget nunc lobortis mattis aliquam faucibus purus in. Vulputate\nenim nulla aliquet porttitor lacus luctus accumsan tortor posuere.\nUltrices dui sapien eget mi proin sed. Neque aliquam vestibulum morbi\nblandit cursus risus at ultrices. Etiam dignissim diam quis enim lobortis\nscelerisque fermentum dui. Nulla posuere sollicitudin aliquam ultrices\nsagittis. Urna nec tincidunt praesent semper. Enim nunc faucibus a\npellentesque sit.\n\n## append text to the file\nEget felis eget nunc lobortis mattis aliquam faucibus purus in. Vulputate\nenim nulla aliquet porttitor lacus luctus accumsan tortor posuere.\nUltrices dui sapien eget mi proin sed. Neque aliquam vestibulum morbi\nblandit cursus risus at ultrices. Etiam dignissim diam quis enim lobortis\nscelerisque fermentum dui. Nulla posuere sollicitudin aliquam ultrices\nsagittis. Urna nec tincidunt praesent semper. Enim nunc faucibus a\npellentesque sit.\n\n## delete file\nEget felis eget nunc lobortis mattis aliquam faucibus purus in. Vulputate\nenim nulla aliquet porttitor lacus luctus accumsan tortor posuere.\nUltrices dui sapien eget mi proin sed. Neque aliquam vestibulum morbi\nblandit cursus risus at ultrices. Etiam dignissim diam quis enim lobortis\nscelerisque fermentum dui. Nulla posuere sollicitudin aliquam ultrices\nsagittis. Urna nec tincidunt praesent semper. Enim nunc faucibus a\npellentesque sit.\n\n## delete file again\nthis will fail because file doesn't exist\n\n![logo](https://ca.slack-edge.com/E01LD9FH0JZ-U01T66ZG20J-369a4b616e69-72)",
-						Id:          "ac0503d5a750aa6e5ee976618f507258",
+						Id:          "a34c01fd2ed12091738182f3643974c7",
 						OrderId:     0,
+						Completed:   false,
 					},
 					Spec: map[string]interface{}{
 						"steps": []interface{}{
