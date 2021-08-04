@@ -107,7 +107,8 @@ func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error 
 			if err != nil {
 				return fmt.Errorf("could not read json data in %s: %s", match, err)
 			}
-			j.Metadata.Parent = genericYAML.Metadata.Id
+			j.Metadata.Parent = genericYAML.Metadata.OrderId
+			genericYAML.Metadata.Children = append(genericYAML.Metadata.Children, j.Metadata.OrderId)
 			err = validateAndFillDefaultValues(&j)
 			if err != nil {
 				pterm.Error.Printf("ERROR: validation error in: %s\n", match)
