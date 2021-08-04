@@ -77,7 +77,12 @@ func main() {
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "debug, d",
-					Usage: fmt.Sprintf("Print debugging info when generating doc"),
+					Usage: "Print debugging info when generating doc",
+				},
+				cli.StringFlag{
+					Name:  "output-dir",
+					Usage: "Output directory of docs",
+					Value: "dist",
 				},
 			},
 			Action: func(c *cli.Context) error {
@@ -109,10 +114,11 @@ func main() {
 // converts a cli context into a goss Config
 func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 	cfg := &util.Config{
-		File:    c.GlobalString("file"),
-		Debug:   c.Bool("debug"),
-		NoColor: c.GlobalBool("no-color"),
-		Vars:    c.GlobalString("vars"),
+		File:      c.GlobalString("file"),
+		Debug:     c.Bool("debug"),
+		NoColor:   c.GlobalBool("no-color"),
+		Vars:      c.GlobalString("vars"),
+		OutputDir: c.String("output-dir"),
 	}
 
 	if cfg.NoColor {

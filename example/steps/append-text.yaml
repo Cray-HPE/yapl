@@ -7,7 +7,7 @@ spec:
   jobs:
     - preCondition:
         description: |-
-          # File exists
+          ## File exists
           make sure the file we are appending to does exist
         command: |-
           sleep $[ ( $RANDOM % {{.Vars.random}} )  + 1 ]s
@@ -16,7 +16,7 @@ spec:
           this is troubleshooting
       action:
         description: |-
-          # append file
+          ## append file
           use `echo` cmd to create a file 
         command: |-
           sleep $[ ( $RANDOM % 3 )  + 1 ]s
@@ -26,7 +26,7 @@ spec:
           this is troubleshooting
       postValidation:
         description: |-
-          # WTH
+          ## WTH
           this is `me failing english? umpossible` moment
         command: sh -c 'echo "HELP...."'
         troubleshooting: |-
