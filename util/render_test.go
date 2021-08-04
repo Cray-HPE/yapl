@@ -21,26 +21,6 @@ func Test_RenderPipeline(t *testing.T) {
 		want    []model.GenericYAML
 		wantErr bool
 	}{
-		// {
-		// 	name: "empty",
-		// 	args: args{
-		// 		file: "example/pipelines/empty.yaml",
-		// 	},
-		// 	want: []model.GenericYAML{
-		// 		{
-		// 			Kind: "",
-		// 			Metadata: model.Metadata{
-		// 				Name:        "",
-		// 				Description: "",
-		// 				Parent:      "",
-		// 				Id:          "8a80554c91d9fca8acb82f023de02f11",
-		// 				OrderId:     0,
-		// 			},
-		// 			Spec: map[string]interface{}{},
-		// 		},
-		// 	},
-		// 	wantErr: false,
-		// },
 		{
 			name: "simple",
 			args: args{
