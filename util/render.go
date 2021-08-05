@@ -96,7 +96,6 @@ func unmarshalYAML(data []byte, v interface{}) error {
 }
 
 func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error {
-	genericYAML.Metadata.OrderId = len(renderedPipeline)
 	data, _ := yaml.Marshal(genericYAML)
 	genericYAML.Metadata.Id = fmt.Sprintf("%x", md5.Sum(data))
 	renderedPipeline = append(renderedPipeline, genericYAML)
@@ -127,8 +126,8 @@ func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error 
 			if err != nil {
 				return fmt.Errorf("could not read json data in %s: %s", match, err)
 			}
-			j.Metadata.Parent = genericYAML.Metadata.OrderId
-			genericYAML.Metadata.Children = append(genericYAML.Metadata.Children, j.Metadata.OrderId)
+			j.Metadata.ParentId = genericYAML.Metadata.Id
+			genericYAML.Metadata.ChildrenIds = append(genericYAML.Metadata.ChildrenIds, j.Metadata.Id)
 			err = validateAndFillDefaultValues(&j)
 			if err != nil {
 				pterm.Error.Printf("ERROR: validation error in: %s\n", match)
