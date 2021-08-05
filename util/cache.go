@@ -7,7 +7,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var CACHE_DIR = ".cache"
+var CACHE_DIR = "/etc/cray/yapl/.cache"
 
 func pushToCache(genericYAML model.GenericYAML) error {
 	os.MkdirAll(CACHE_DIR, os.ModePerm)

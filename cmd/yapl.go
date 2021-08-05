@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -37,13 +36,13 @@ func main() {
 	}
 	app.Commands = []cli.Command{
 		{
-			Name:    "render",
+			Name:    "validate",
 			Aliases: []string{"r"},
-			Usage:   "render yapl after imports",
+			Usage:   "validate yapl pipeline definition after imports",
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "debug, d",
-					Usage: fmt.Sprintf("Print debugging info when rendering"),
+					Usage: "Print debugging info when validating",
 				},
 			},
 			Action: func(c *cli.Context) error {
@@ -60,7 +59,7 @@ func main() {
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "debug, d",
-					Usage: fmt.Sprintf("Print debugging info when executing"),
+					Usage: "Print debugging info when executing",
 				},
 			},
 			Action: func(c *cli.Context) error {
