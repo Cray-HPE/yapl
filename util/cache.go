@@ -36,8 +36,8 @@ func hasRunAlready(id string) bool {
 	return genericYAML.Metadata.Completed
 }
 
-func clearCache() error {
-	return os.Remove(CACHE_DIR)
+func ClearCache() error {
+	return os.RemoveAll(CACHE_DIR)
 }
 
 func isCached(id string) bool {

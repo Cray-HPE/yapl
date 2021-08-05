@@ -61,6 +61,11 @@ func main() {
 					Name:  "debug, d",
 					Usage: "Print debugging info when executing",
 				},
+				cli.BoolFlag{
+					Name:   "no-cache",
+					Usage:  "ignore cached execution status",
+					EnvVar: "NO_CACHE",
+				},
 			},
 			Action: func(c *cli.Context) error {
 				err := util.ExecutePipeline(newRuntimeConfigFromCLI(c))
@@ -107,6 +112,7 @@ func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 		NoColor:   c.GlobalBool("no-color"),
 		Vars:      c.GlobalString("vars"),
 		OutputDir: c.String("output-dir"),
+		NoCache:   c.Bool("no-cache"),
 	}
 
 	if cfg.NoColor {
@@ -117,6 +123,9 @@ func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 		pterm.EnableDebugMessages()
 	} else {
 		pterm.DisableDebugMessages()
+	}
+	if cfg.NoCache {
+		util.ClearCache()
 	}
 
 	return cfg

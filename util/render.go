@@ -96,6 +96,7 @@ func unmarshalYAML(data []byte, v interface{}) error {
 }
 
 func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error {
+	genericYAML.Metadata.RenderedId = len(renderedPipeline)
 	data, _ := yaml.Marshal(genericYAML)
 	genericYAML.Metadata.Id = fmt.Sprintf("%x", md5.Sum(data))
 	renderedPipeline = append(renderedPipeline, genericYAML)
