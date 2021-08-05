@@ -9,7 +9,8 @@ require (
 	github.com/MichaelMure/go-term-markdown v0.1.4
 	github.com/fatih/color v1.9.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect
-	github.com/google/uuid v1.3.0 // indirect
+	github.com/google/uuid v1.3.0
+	github.com/gorilla/websocket v1.4.2
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect

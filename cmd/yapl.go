@@ -97,6 +97,18 @@ func main() {
 				return nil
 			},
 		},
+		{
+			Name:    "server",
+			Aliases: []string{"r"},
+			Usage:   "web representation of yapl pipeline after imports",
+			Action: func(c *cli.Context) error {
+				err := util.Serve(newRuntimeConfigFromCLI(c))
+				if err != nil {
+					return err
+				}
+				return nil
+			},
+		},
 	}
 	err := app.Run(os.Args)
 	if err != nil {
