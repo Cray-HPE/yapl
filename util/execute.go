@@ -21,6 +21,10 @@ func ExecutePipeline(cfg *Config) error {
 	}
 
 	for _, pipeline := range renderedPipeline {
+		if hasRunAlready(pipeline.Metadata.Id) {
+			pterm.Warning.Printf("Skip - %s: %s\n", pipeline.Kind, pipeline.Metadata.Name)
+			continue
+		}
 		if pipeline.Kind == "pipeline" {
 			executePipeline(pipeline)
 			continue
@@ -53,6 +57,8 @@ func executePipeline(pipeline model.GenericYAML) error {
 
 	pterm.DefaultHeader.Printf("Pipeline: %s \n", pipeline.Metadata.Name)
 	pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
+	pipeline.Metadata.Completed = true
+	pushToCache(pipeline)
 	return nil
 }
 
@@ -78,6 +84,8 @@ func executeStep(pipeline model.GenericYAML) error {
 			return err
 		}
 	}
+	pipeline.Metadata.Completed = true
+	pushToCache(pipeline)
 	return nil
 }
 

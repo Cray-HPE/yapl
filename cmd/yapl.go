@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -37,13 +36,13 @@ func main() {
 	}
 	app.Commands = []cli.Command{
 		{
-			Name:    "render",
+			Name:    "validate",
 			Aliases: []string{"r"},
-			Usage:   "render yapl after imports",
+			Usage:   "validate yapl pipeline definition after imports",
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "debug, d",
-					Usage: fmt.Sprintf("Print debugging info when rendering"),
+					Usage: "Print debugging info when validating",
 				},
 			},
 			Action: func(c *cli.Context) error {
@@ -60,7 +59,12 @@ func main() {
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "debug, d",
-					Usage: fmt.Sprintf("Print debugging info when executing"),
+					Usage: "Print debugging info when executing",
+				},
+				cli.BoolFlag{
+					Name:   "no-cache",
+					Usage:  "ignore cached execution status",
+					EnvVar: "NO_CACHE",
 				},
 			},
 			Action: func(c *cli.Context) error {
@@ -108,6 +112,7 @@ func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 		NoColor:   c.GlobalBool("no-color"),
 		Vars:      c.GlobalString("vars"),
 		OutputDir: c.String("output-dir"),
+		NoCache:   c.Bool("no-cache"),
 	}
 
 	if cfg.NoColor {
@@ -118,6 +123,9 @@ func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 		pterm.EnableDebugMessages()
 	} else {
 		pterm.DisableDebugMessages()
+	}
+	if cfg.NoCache {
+		util.ClearCache()
 	}
 
 	return cfg

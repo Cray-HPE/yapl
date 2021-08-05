@@ -6,4 +6,5 @@ type Config struct {
 	NoColor   bool
 	Vars      string
 	OutputDir string
+	NoCache   bool
 }

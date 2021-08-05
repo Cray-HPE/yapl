@@ -32,11 +32,10 @@ USAGE:
    yapl [global options] command [command options] [arguments...]
 
 COMMANDS:
-   render, r  render yapl after imports
-   execute    execute yapl after imports
-   doc        generate doc after imports
-   dep        generate dependency graph after imports
-   help, h    Shows a list of commands or help for one command
+   validate, r  validate yapl pipeline definition after imports
+   execute      execute yapl after imports
+   doc          generate doc after imports
+   help, h      Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --file value, -f value  Pipeline file to read from (default: "./pipeline.yaml") [$PIPELINE_FILE]

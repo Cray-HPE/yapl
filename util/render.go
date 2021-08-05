@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"sync"
 
 	"github.com/Cray-HPE/yapl/model"
 	"github.com/pterm/pterm"
@@ -22,7 +23,7 @@ func RenderPipeline(cfg *Config) ([]model.GenericYAML, error) {
 	validate = validator.New()
 	currentTemplateFilter, _ = NewTemplateFilter(cfg.Vars)
 
-	tmpYaml, err := readYAML(cfg.File)
+	tmpYaml, err := ReadYAML(cfg.File)
 	if err != nil {
 		return []model.GenericYAML{{}}, err
 	}
@@ -39,10 +40,29 @@ func RenderPipeline(cfg *Config) ([]model.GenericYAML, error) {
 			fmt.Printf("%v", string(renderedData))
 		}
 	}
+
+	var wg sync.WaitGroup
+	for _, pipeline := range renderedPipeline {
+		// Increment the WaitGroup counter.
+		wg.Add(1)
+		// Launch a goroutine to save cache
+		go func(pipeline model.GenericYAML) {
+			// Decrement the counter when the goroutine completes.
+			defer wg.Done()
+			// write to cache
+			if !isCached(pipeline.Metadata.Id) {
+				pterm.Debug.Printf("caching: %s - %s\n", pipeline.Metadata.Name, pipeline.Metadata.Id)
+				pushToCache(pipeline)
+			}
+		}(pipeline)
+	}
+	// Wait for all caching to complete.
+	wg.Wait()
+
 	return renderedPipeline, nil
 }
 
-func readYAML(filePath string) (model.GenericYAML, error) {
+func ReadYAML(filePath string) (model.GenericYAML, error) {
 	file, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return model.GenericYAML{}, fmt.Errorf("file error: %v", err)
@@ -76,7 +96,7 @@ func unmarshalYAML(data []byte, v interface{}) error {
 }
 
 func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error {
-	genericYAML.Metadata.OrderId = len(renderedPipeline)
+	genericYAML.Metadata.RenderedId = len(renderedPipeline)
 	data, _ := yaml.Marshal(genericYAML)
 	genericYAML.Metadata.Id = fmt.Sprintf("%x", md5.Sum(data))
 	renderedPipeline = append(renderedPipeline, genericYAML)
@@ -103,12 +123,12 @@ func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error 
 		}
 		for _, match := range matches {
 			fdir := filepath.Dir(match)
-			j, err := readYAML(match)
+			j, err := ReadYAML(match)
 			if err != nil {
 				return fmt.Errorf("could not read json data in %s: %s", match, err)
 			}
-			j.Metadata.Parent = genericYAML.Metadata.OrderId
-			genericYAML.Metadata.Children = append(genericYAML.Metadata.Children, j.Metadata.OrderId)
+			j.Metadata.ParentId = genericYAML.Metadata.Id
+			genericYAML.Metadata.ChildrenIds = append(genericYAML.Metadata.ChildrenIds, j.Metadata.Id)
 			err = validateAndFillDefaultValues(&j)
 			if err != nil {
 				pterm.Error.Printf("ERROR: validation error in: %s\n", match)
@@ -125,6 +145,7 @@ func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error 
 }
 
 func validateAndFillDefaultValues(genericYAML *model.GenericYAML) error {
+	genericYAML.Metadata.Completed = false
 	switch genericYAML.Kind {
 	case "pipeline":
 		_, err := genericYAML.ToPipeline()
