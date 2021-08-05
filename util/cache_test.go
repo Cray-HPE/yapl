@@ -9,7 +9,7 @@ import (
 )
 
 func Test_CachePushAndPop(t *testing.T) {
-
+	CACHE_DIR = ".cache"
 	tests := []struct {
 		name    string
 		step    model.GenericYAML
@@ -42,7 +42,7 @@ func Test_CachePushAndPop(t *testing.T) {
 }
 
 func Test_CacheHasRunAlready(t *testing.T) {
-
+	CACHE_DIR = ".cache"
 	tests := []struct {
 		name    string
 		step    model.GenericYAML
