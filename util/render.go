@@ -1,6 +1,7 @@
 package util
 
 import (
+	/* #nosec */
 	"crypto/md5"
 	"fmt"
 	"io/ioutil"

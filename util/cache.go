@@ -15,7 +15,7 @@ func pushToCache(genericYAML model.GenericYAML) error {
 	if err != nil {
 		return err
 	}
-
+	/* #nosec */
 	defer f.Close()
 	out, _ := yaml.Marshal(genericYAML)
 
