@@ -21,9 +21,13 @@ jobs:
       run: |
         export PATH=$PATH:$(go env GOPATH)/bin
         go get github.com/securego/gosec/cmd/gosec
-        gosec -no-fail ./...
+        gosec -no-fail -fmt sarif -out results.sarif ./...
     - name: Build
       run: go build -v cmd/yapl.go
-
     - name: Test
       run: go test -v ./...
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        # Path to SARIF file relative to the root of the repository
+        sarif_file: results.sarif
