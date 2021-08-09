@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import { connect } from "./api/ws";
-import { Col, Layout, Menu, Row } from "antd";
+import { Button, Col, Layout, Menu, Row } from "antd";
 import {
   UserOutlined,
   LaptopOutlined,
@@ -20,25 +20,23 @@ class App extends Component {
   render() {
     return (
       <Layout style={{ height: "100vh" }}>
-        <Header style={{ background: "#01A982", height: "8vh" }}>Header</Header>
+        <Header style={{ background: "#01A982" }}>
+          <Button type="primary">Primary Button</Button>
+        </Header>
         <Content style={{ padding: "5vh 2vw" }}>
-          <Layout
-            className="site-layout-background"
-            style={{ padding: "0", height: "100%" }}
-          >
-            <Row style={{ margin: 0 }}>
+          <Layout style={{ padding: "0", height: "100%" }}>
+            <Row style={{ marginLeft: 0 }} className="site-layout-background">
               <Col
                 flex={3}
                 style={{
                   background: "#24292f",
-                  height: "82vh",
+                  height: "80vh",
                   overflow: "auto",
-                  color: "white"
+                  color: "white",
+                  margin: "0",
                 }}
               >
-                <div
-                  style={{ margin: "1vh", height: "80vh", overflow: "auto"  }}
-                >
+                <div>
                   ...
                   <br />
                   Really
@@ -138,7 +136,8 @@ class App extends Component {
               </Col>
               <Col
                 flex={2}
-                style={{ margin: "1vh", height: "80vh", overflow: "auto" }}
+                style={{ margin: "0", height: "80vh", overflow: "auto" }}
+                className="site-layout-background"
               >
                 <ReactMarkdown>
                   {`# Hello, *world*!
