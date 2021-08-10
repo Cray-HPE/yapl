@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 export const Markdown = () => {
   return useObserver(() => (
     <Col
-      flex={2}
+      flex="auto"
       style={{ margin: "0", height: "80vh", overflow: "auto" }}
       className="site-layout-background"
     >

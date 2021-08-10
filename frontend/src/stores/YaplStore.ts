@@ -28,6 +28,10 @@ export class YaplStore {
     this.connect();
     makeObservable(this)
   }
+  public reload = () => {
+    this.yaplList = []
+    //TODO: call api to get list
+  }
 
   public addYapl = (yapl: IYapl) => {
     this.yaplList.push(yapl);

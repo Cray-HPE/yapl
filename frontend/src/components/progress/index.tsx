@@ -8,7 +8,7 @@ export const ProgressPage = () => {
 
   return useObserver(() => (
     <Col
-      flex={3}
+      flex="40vw"
       style={{
         background: "#24292f",
         height: "80vh",
@@ -23,7 +23,7 @@ export const ProgressPage = () => {
           return (
             <>
               ID: {yapl.Metadata.Id}
-              ----
+              <br/>
               Status: {yapl.Metadata.Status}
               <br/>
             </>
