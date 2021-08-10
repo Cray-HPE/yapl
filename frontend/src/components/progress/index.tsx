@@ -1,13 +1,16 @@
 import {
-    CheckCircleOutlined,
-    CloseCircleOutlined,
-    DownOutlined, MinusCircleOutlined, SyncOutlined
+  CheckCircleTwoTone,
+  CloseCircleTwoTone,
+  DownOutlined,
+  QuestionCircleTwoTone,
+  SyncOutlined,
 } from "@ant-design/icons";
 import { Col, Tree } from "antd";
 import { useObserver } from "mobx-react-lite";
 import { IYapl, useStores } from "../../stores/YaplStore";
 import "./index.css";
 const { TreeNode } = Tree;
+
 export const ProgressPage = () => {
   const { YaplStore } = useStores();
 
@@ -18,6 +21,7 @@ export const ProgressPage = () => {
         background: "#24292f",
         height: "80vh",
         overflow: "auto",
+        overflowX: "hidden",
         color: "white",
         margin: "0",
       }}
@@ -25,7 +29,6 @@ export const ProgressPage = () => {
       <Tree
         showIcon
         defaultExpandAll
-        defaultSelectedKeys={["0-0-0"]}
         selectedKeys={[YaplStore?.SelectedObj?.metadata?.id]}
         switcherIcon={<DownOutlined />}
         multiple={false}
@@ -39,21 +42,40 @@ export const ProgressPage = () => {
         {YaplStore.yaplList.map((yapl: IYapl) => {
           return (
             <TreeNode
-              title={yapl?.metadata?.name}
+              title={<strong>{yapl?.metadata?.name}</strong>}
               key={yapl?.metadata?.id}
               icon={
-                yapl?.metadata?.status === "Not Started" ? (
-                  <MinusCircleOutlined />
+                yapl?.kind === "step" &&
+                (yapl?.metadata?.status === "Not Started" ? (
+                  <QuestionCircleTwoTone />
                 ) : yapl?.metadata?.status === "Running" ? (
-                  <SyncOutlined spin />
+                  <SyncOutlined spin twoToneColor="blue" />
                 ) : yapl?.metadata?.status === "Done" ? (
-                  <CheckCircleOutlined />
+                  <CheckCircleTwoTone twoToneColor="#52c41a" />
                 ) : (
-                  <CloseCircleOutlined />
-                )
+                  <CloseCircleTwoTone twoToneColor="red" />
+                ))
               }
             >
-              <TreeNode isLeaf={true} title="1"></TreeNode>
+              {yapl?.kind === "step" && (
+                <>
+                  <TreeNode
+                    isLeaf={true}
+                    title="Pre condition"
+                    key={yapl?.metadata?.id + "Pre Condition"}
+                  />
+                  <TreeNode
+                    isLeaf={true}
+                    title="Action"
+                    key={yapl?.metadata?.id + "Action"}
+                  />
+                  <TreeNode
+                    isLeaf={true}
+                    title="Post Validation"
+                    key={yapl?.metadata?.id + "Post Validation"}
+                  />
+                </>
+              )}
             </TreeNode>
           );
         })}

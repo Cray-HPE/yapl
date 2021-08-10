@@ -21,8 +21,7 @@ func Test_CachePushAndPop(t *testing.T) {
 			step: model.GenericYAML{
 				Kind: "step",
 				Metadata: model.Metadata{
-					Id:          uuid.NewString(),
-					ChildrenIds: []string{},
+					Id: uuid.NewString(),
 				},
 			},
 			wantErr: false,
@@ -54,9 +53,8 @@ func Test_CacheHasRunAlready(t *testing.T) {
 			step: model.GenericYAML{
 				Kind: "step",
 				Metadata: model.Metadata{
-					Id:          uuid.NewString(),
-					ChildrenIds: []string{},
-					Status:      "Not Started",
+					Id:     uuid.NewString(),
+					Status: "Not Started",
 				},
 			},
 			wantErr: false,

@@ -7,7 +7,6 @@ interface IMetadata {
   renderedId: number;
   parentId: string;
   id: string;
-  childrenIds: string[];
   status: string;
 }
 
