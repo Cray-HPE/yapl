@@ -56,7 +56,7 @@ func Test_CacheHasRunAlready(t *testing.T) {
 				Metadata: model.Metadata{
 					Id:          uuid.NewString(),
 					ChildrenIds: []string{},
-					Completed:   false,
+					Status:      "Not Started",
 				},
 			},
 			wantErr: false,
@@ -69,7 +69,7 @@ func Test_CacheHasRunAlready(t *testing.T) {
 			assert.Equal(t, tt.wantErr, err != nil, "has error")
 			assert.Equal(t, false, hasRunAlready(tt.step.Metadata.Id))
 
-			tt.step.Metadata.Completed = true
+			tt.step.Metadata.Status = "Done"
 			pushToCache(tt.step)
 			assert.Equal(t, true, hasRunAlready(tt.step.Metadata.Id))
 

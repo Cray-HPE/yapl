@@ -33,7 +33,7 @@ func popFromCache(id string) (model.GenericYAML, error) {
 
 func hasRunAlready(id string) bool {
 	genericYAML, _ := popFromCache(id)
-	return genericYAML.Metadata.Completed
+	return genericYAML.Metadata.Status == "Done"
 }
 
 func ClearCache() error {

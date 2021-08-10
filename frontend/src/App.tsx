@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import { connect } from "./api/ws";
 import { Badge, Button, Col, Layout, Menu, Progress, Row, Tooltip } from "antd";
 import ReactMarkdown from "react-markdown";
 import { Header } from "./components/header";
@@ -11,10 +10,6 @@ import { ProgressPage } from "./components/progress";
 const { SubMenu } = Menu;
 const { Content, Footer, Sider } = Layout;
 class App extends Component {
-  constructor(props: any) {
-    super(props);
-    connect();
-  }
   render() {
     return (
       <Layout style={{ height: "100vh" }}>

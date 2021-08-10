@@ -145,7 +145,7 @@ func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error 
 }
 
 func validateAndFillDefaultValues(genericYAML *model.GenericYAML) error {
-	genericYAML.Metadata.Completed = false
+	genericYAML.Metadata.Status = "Not Started"
 	switch genericYAML.Kind {
 	case "pipeline":
 		_, err := genericYAML.ToPipeline()

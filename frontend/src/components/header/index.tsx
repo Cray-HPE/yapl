@@ -2,8 +2,19 @@ import { CaretRightFilled, StepForwardFilled } from "@ant-design/icons";
 import { Badge, Tooltip, Button, Layout } from "antd";
 import { Header as AntdHeader } from "antd/lib/layout/layout";
 import { useObserver } from "mobx-react-lite";
+import { useStores } from "../../stores/YaplStore";
 export const Header = () => {
-  return useObserver(()=>(
+  const { YaplStore } = useStores();
+  
+  const startPipeline = () => {
+    let headers = new Headers()
+    headers.append("pragma", "no-cache")
+    fetch(`/start`,{headers: headers})
+      .then((res) => res.json())
+      .then((json) => console.log(json.data));
+  };
+
+  return useObserver(() => (
     <>
       <AntdHeader style={{ background: "#01A982" }}>
         <Badge status="success" text="Success" />
@@ -13,6 +24,7 @@ export const Header = () => {
               shape="circle"
               icon={<CaretRightFilled />}
               style={{ marginRight: "20px" }}
+              onClick={startPipeline}
             />
           </Tooltip>
           <Tooltip title="Resume from last run">
@@ -20,6 +32,7 @@ export const Header = () => {
               shape="circle"
               icon={<StepForwardFilled />}
               style={{ marginRight: "20px" }}
+              onClick={resumePipeline}
             />
           </Tooltip>
         </div>
@@ -27,3 +40,5 @@ export const Header = () => {
     </>
   ));
 };
+
+const resumePipeline = () => {};

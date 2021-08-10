@@ -19,6 +19,7 @@ var upgrader = websocket.Upgrader{
 	// For now, we'll do no checking and just allow any connection
 	CheckOrigin: func(r *http.Request) bool { return true },
 }
+var cfg *Config
 
 // define a reader which will listen for
 // new messages being sent to our WebSocket
@@ -52,21 +53,51 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
+	SetWebsocket(ws)
 	// listen indefinitely for new messages coming
 	// through on our WebSocket connection
 	reader(ws)
 }
 
+var status string = "Not started"
+
 func setupRoutes() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Simple Server")
 	})
+
 	// /ws endpoint
 	http.HandleFunc("/ws", serveWs)
+
+	// /start endpoint
+	http.HandleFunc("/start", func(w http.ResponseWriter, r *http.Request) {
+		if status == "running" {
+			fmt.Fprintf(w, `{"Status":"another pipeline is running"}`)
+			return
+		}
+		status = "running"
+		SendMessage(fmt.Sprintf(`{"id": "0","status": "%s"}`, status))
+		fmt.Fprintf(w, `{"Status":"Started"}`)
+		ClearCache()
+		err := ExecutePipeline(cfg)
+		if nil != err {
+			status = "Failed"
+			SendMessage(fmt.Sprintf(`{"id": "0","status": "%s"}`, status))
+			return
+		}
+		status = "Completed"
+		SendMessage(fmt.Sprintf(`{"id": "0","status": "%s"}`, status))
+	})
+
+	// /status endpoint
+	http.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, `{"Status":"%s"}`, status)
+	})
 }
 
-func Serve(cfg *Config) error {
+func Serve(inCfg *Config) error {
 	pterm.Info.Println("YAPL server mode")
+	cfg = inCfg
 	setupRoutes()
 	return http.ListenAndServe(":8080", nil)
 }

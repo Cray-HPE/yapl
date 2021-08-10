@@ -7,5 +7,5 @@ type Metadata struct {
 	ParentId    string
 	Id          string
 	ChildrenIds []string
-	Completed   bool
+	Status      string
 }

@@ -37,7 +37,6 @@ func ExecutePipeline(cfg *Config) error {
 			continue
 		}
 	}
-
 	return nil
 }
 
@@ -57,12 +56,13 @@ func executePipeline(pipeline model.GenericYAML) error {
 
 	pterm.DefaultHeader.Printf("Pipeline: %s \n", pipeline.Metadata.Name)
 	pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
-	pipeline.Metadata.Completed = true
+	ChangeStatus(&pipeline, "Done")
 	pushToCache(pipeline)
 	return nil
 }
 
 func executeStep(pipeline model.GenericYAML) error {
+	ChangeStatus(&pipeline, "Running")
 	step, _ := pipeline.ToStep()
 	for _, job := range step.Spec.Jobs {
 		fmt.Println()
@@ -71,20 +71,23 @@ func executeStep(pipeline model.GenericYAML) error {
 
 		err := execute(job.PreCondition, "Checking Precondition")
 		if err != nil {
+			ChangeStatus(&pipeline, "Failed - Precondition")
 			return err
 		}
 
 		err = execute(job.Action, "Executing Action")
 		if err != nil {
+			ChangeStatus(&pipeline, "Failed - Executing")
 			return err
 		}
 
-		err = execute(job.PostValidation, "Post action validation")
+		err = execute(job.PostValidation, "Post validation")
 		if err != nil {
+			ChangeStatus(&pipeline, "Failed - postValidation")
 			return err
 		}
 	}
-	pipeline.Metadata.Completed = true
+	ChangeStatus(&pipeline, "Done")
 	pushToCache(pipeline)
 	return nil
 }
