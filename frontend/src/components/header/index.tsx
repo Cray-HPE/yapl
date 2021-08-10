@@ -7,7 +7,6 @@ export const Header = () => {
   const { YaplStore } = useStores();
 
   const startPipeline = () => {
-    YaplStore.reload()
     let headers = new Headers()
     headers.append("pragma", "no-cache")
     fetch(`/start`,{headers: headers})

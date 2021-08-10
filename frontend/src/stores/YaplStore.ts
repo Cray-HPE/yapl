@@ -1,50 +1,72 @@
 import { observable, computed, action, makeObservable } from "mobx";
 import { createContext, useContext } from "react";
-
+import * as yaml from "js-yaml";
+import { SmileOutlined, MehOutlined, FrownFilled } from "@ant-design/icons";
 interface IMetadata {
-  Name: string;
-  Description: string;
-  RenderedId: number;
-  ParentId: string;
-  Id: string;
-  ChildrenIds: string[];
-  Status: boolean;
+  name: string;
+  description: string;
+  renderedId: number;
+  parentId: string;
+  id: string;
+  childrenIds: string[];
+  status: string;
 }
 
 export interface IYapl {
   kind: string;
-  Metadata: IMetadata;
-  Spec: any;
+  metadata: IMetadata;
+  spec: any;
 }
 
 export class YaplStore {
-  
   @observable
   public yaplList: IYapl[] = [];
+  @observable
+  public SelectedObj: IYapl;
   private ws;
 
   constructor() {
     this.ws = new WebSocket("ws://localhost:8080/ws");
     this.connect();
-    makeObservable(this)
+    this.reload();
+    this.SelectedObj = this.yaplList[0]
+    makeObservable(this);
   }
+
   public reload = () => {
-    this.yaplList = []
-    //TODO: call api to get list
-  }
+    this.yaplList = [];
+    let headers = new Headers();
+    headers.append("pragma", "no-cache");
+    fetch(`/render`, { headers: headers })
+      .then((res) => res.json())
+      .then((yaplList) => {
+        yaplList.map((yapl: IYapl)=>{
+          this.addYapl(yapl)
+        })
+        
+      });
+  };
 
   public addYapl = (yapl: IYapl) => {
     this.yaplList.push(yapl);
   };
 
-  public updateYapl = (updatedYapl: IYapl) => {
+  public resetStatus = ()=>{
+    this.yaplList = this.yaplList.map((yapl: IYapl)=>{
+      yapl.metadata.status = "Not Started"
+      return yapl
+    })
+  }
+
+  public updateYapl = (updatedYapl: any) => {
     const updatedYapls = this.yaplList.map((yapl) => {
-      if (yapl.Metadata.Id === updatedYapl.Metadata.Id) {
+      if (yapl.metadata.id === updatedYapl.metadata.id) {
         return { ...updatedYapl };
       }
       return yapl;
     });
     this.yaplList = updatedYapls;
+    this.SelectedObj = updatedYapl
   };
   connect = () => {
     console.log("Attempting Connection...");
@@ -54,18 +76,8 @@ export class YaplStore {
     };
 
     this.ws.onmessage = (msg) => {
-      let obj = JSON.parse(msg.data);
-      let yapl = {} as IYapl;
-      yapl.Metadata = {
-        Id: obj.id,
-        Status: obj.status,
-        Name: "",
-        Description: "",
-        ParentId: "",
-        RenderedId: 1,
-        ChildrenIds: [],
-      };
-      this.addYapl(yapl)
+      let obj = yaml.load(msg.data) as IYapl;
+      this.updateYapl(obj);
     };
 
     this.ws.onclose = (event) => {
@@ -85,7 +97,7 @@ export const rootStoreContext = createContext({
 export const useStores = () => {
   const store = useContext(rootStoreContext);
   if (!store) {
-    throw new Error("useStores must be used winin a provider")
+    throw new Error("useStores must be used winin a provider");
   }
-  return store
-}
+  return store;
+};

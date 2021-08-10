@@ -1,40 +1,21 @@
 import { Col } from "antd";
 import { useObserver } from "mobx-react-lite";
 import ReactMarkdown from "react-markdown";
+import { useStores } from "../../stores/YaplStore";
 
 export const Markdown = () => {
+  const { YaplStore } = useStores();
   return useObserver(() => (
     <Col
-      flex="auto"
+      flex="20vw"
       style={{ margin: "0", height: "80vh", overflow: "auto" }}
       className="site-layout-background"
     >
-      <ReactMarkdown>
-        {`# Hello, *world*!
-    
-## sadfsadf
-## sadfsadf    
-## sadfsadf
-## sadfsadf
-## sadfsadf
-## sadfsadf
-## sadfsadf
-## sadfsadf
-## sadfsadf
-## sadfsadf
-## sadfsadf
-## sadfsadf
-## sadfsadf
-## sadfsadf
-## sadfsadf
-## sadfsadf
-## sadfsadf
-## sadfsadf
-## sadfsadf
-## sadfsadf
-
-`}
-      </ReactMarkdown>
+      <div style={{padding:"16px"}}>
+        <ReactMarkdown>
+          {YaplStore?.SelectedObj?.metadata?.description || ""}
+        </ReactMarkdown>
+      </div>
     </Col>
   ));
 };

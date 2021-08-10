@@ -1,6 +1,8 @@
 package util
 
 import (
+	jsoniter "github.com/json-iterator/go"
+
 	"fmt"
 	"log"
 	"net/http"
@@ -76,22 +78,29 @@ func setupRoutes() {
 			return
 		}
 		status = "running"
-		SendMessage(fmt.Sprintf(`{"id": "0","status": "%s"}`, status))
 		fmt.Fprintf(w, `{"Status":"Started"}`)
 		ClearCache()
 		err := ExecutePipeline(cfg)
 		if nil != err {
 			status = "Failed"
-			SendMessage(fmt.Sprintf(`{"id": "0","status": "%s"}`, status))
 			return
 		}
 		status = "Completed"
-		SendMessage(fmt.Sprintf(`{"id": "0","status": "%s"}`, status))
 	})
 
 	// /status endpoint
 	http.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `{"Status":"%s"}`, status)
+	})
+
+	// /status endpoint
+	http.HandleFunc("/render", func(w http.ResponseWriter, r *http.Request) {
+		ret, _ := RenderPipeline(cfg)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		var json = jsoniter.ConfigCompatibleWithStandardLibrary
+		data, _ := json.Marshal(&ret)
+		w.Write(data)
 	})
 }
 

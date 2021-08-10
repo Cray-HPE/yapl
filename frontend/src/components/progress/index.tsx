@@ -1,8 +1,15 @@
-import { Col } from "antd";
+import { Col, Tree } from "antd";
 import { Observer, useObserver } from "mobx-react-lite";
 import { IYapl, useStores } from "../../stores/YaplStore";
 import { trace } from "mobx";
-
+import {
+  DownOutlined,
+  FrownFilled,
+  FrownOutlined,
+  MehOutlined,
+  SmileOutlined,
+} from "@ant-design/icons";
+const { TreeNode } = Tree;
 export const ProgressPage = () => {
   const { YaplStore } = useStores();
 
@@ -17,19 +24,29 @@ export const ProgressPage = () => {
         margin: "0",
       }}
     >
-      <div>
+      <Tree
+        showIcon
+        defaultExpandAll
+        defaultSelectedKeys={["0-0-0"]}
+        selectedKeys={[YaplStore?.SelectedObj?.metadata?.id]}
+        switcherIcon={<DownOutlined />}
+        multiple={false}
+        onSelect={(key)=>{
+            const obj = YaplStore.yaplList.find(yapl=> yapl.metadata.id === key[0])
+            YaplStore.SelectedObj = obj || YaplStore.SelectedObj
+        }}
+      >
         {YaplStore.yaplList.map((yapl: IYapl) => {
-          console.log("fml");
           return (
-            <>
-              ID: {yapl.Metadata.Id}
-              <br/>
-              Status: {yapl.Metadata.Status}
-              <br/>
-            </>
+            <TreeNode
+              title={yapl?.metadata?.name + "  -----  " + yapl?.metadata?.status}
+              key={yapl?.metadata?.id}
+            >
+              <TreeNode isLeaf={true} title="1"></TreeNode>
+            </TreeNode>
           );
         })}
-      </div>
+      </Tree>
     </Col>
   ));
 };
