@@ -1,7 +1,6 @@
-import { observable, computed, action, makeObservable } from "mobx";
-import { createContext, useContext } from "react";
 import * as yaml from "js-yaml";
-import { SmileOutlined, MehOutlined, FrownFilled } from "@ant-design/icons";
+import { makeObservable, observable } from "mobx";
+import { createContext, useContext } from "react";
 interface IMetadata {
   name: string;
   description: string;
@@ -40,7 +39,7 @@ export class YaplStore {
     fetch(`/render`, { headers: headers })
       .then((res) => res.json())
       .then((yaplList) => {
-        yaplList.map((yapl: IYapl)=>{
+        yaplList.forEach((yapl: IYapl)=>{
           this.addYapl(yapl)
         })
         

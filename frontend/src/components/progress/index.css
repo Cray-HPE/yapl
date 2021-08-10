@@ -1,0 +1,18 @@
+.ant-tree {
+    background-color: transparent;
+    color: #d0d7de
+}
+.ant-tree .ant-tree-node-content-wrapper {
+    width: 80vw;
+    padding: 4px;
+    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+}
+.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
+    background-color: #32383f
+}
+.ant-tree .ant-tree-node-content-wrapper:hover {
+    background-color: #32383f
+}
+.ant-tree-node {
+    padding: 4px;
+}

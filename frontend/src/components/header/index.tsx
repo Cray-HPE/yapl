@@ -1,5 +1,5 @@
 import { CaretRightFilled, StepForwardFilled } from "@ant-design/icons";
-import { Badge, Tooltip, Button, Layout } from "antd";
+import { Badge, Button, Tooltip } from "antd";
 import { Header as AntdHeader } from "antd/lib/layout/layout";
 import { useObserver } from "mobx-react-lite";
 import { useStores } from "../../stores/YaplStore";
@@ -7,6 +7,7 @@ export const Header = () => {
   const { YaplStore } = useStores();
 
   const startPipeline = () => {
+    YaplStore.resetStatus()
     let headers = new Headers()
     headers.append("pragma", "no-cache")
     fetch(`/start`,{headers: headers})

@@ -1,14 +1,11 @@
-import React, { Component } from "react";
-import logo from "./logo.svg";
+import { Layout,  Row } from "antd";
+import { Component } from "react";
 import "./App.css";
-import { Badge, Button, Col, Layout, Menu, Progress, Row, Tooltip } from "antd";
-import ReactMarkdown from "react-markdown";
 import { Header } from "./components/header";
 import { Markdown } from "./components/markdown";
 import { ProgressPage } from "./components/progress";
 
-const { SubMenu } = Menu;
-const { Content, Footer, Sider } = Layout;
+const { Content,  } = Layout;
 class App extends Component {
   render() {
     return (
