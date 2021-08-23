@@ -36,3 +36,10 @@ release:
   draft: true
   prerelease: auto
   name_template: "{{.ProjectName}}-v{{.Version}}"
+nfpms:
+- maintainer: Carlos A Becker <root@carlosbecker.dev>
+  description: Sample project.
+  homepage: https://github.com/caarlos0/tasktimer
+  license: MIT
+  formats:
+  - rpm
