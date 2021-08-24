@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
-	"sync"
 
 	"github.com/Cray-HPE/yapl/model"
 	"github.com/pterm/pterm"
@@ -13,53 +12,27 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var renderedPipeline []model.GenericYAML
 var currentTemplateFilter TemplateFilter
 var validate *validator.Validate
+var pipelineCounter SafeCounter
 
-func RenderPipeline(cfg *Config) ([]model.GenericYAML, error) {
-	renderedPipeline = []model.GenericYAML{}
+func RenderPipeline(cfg *Config) (int, error) {
+	pipelineCounter = SafeCounter{}
 
 	validate = validator.New()
 	currentTemplateFilter, _ = NewTemplateFilter(cfg.Vars)
 
 	tmpYaml, err := ReadYAML(cfg.File)
 	if err != nil {
-		return []model.GenericYAML{{}}, err
+		return 0, err
 	}
 
-	err = mergeYAMLData(tmpYaml, 0, filepath.Dir(cfg.File))
+	err = mergeYAMLData(&tmpYaml, 0, filepath.Dir(cfg.File))
 	if err != nil {
-		return []model.GenericYAML{{}}, err
+		return 0, err
 	}
 
-	if cfg.Debug {
-		for _, rendered := range renderedPipeline {
-			fmt.Println("---")
-			renderedData, _ := yaml.Marshal(rendered)
-			fmt.Printf("%v", string(renderedData))
-		}
-	}
-
-	var wg sync.WaitGroup
-	for _, pipeline := range renderedPipeline {
-		// Increment the WaitGroup counter.
-		wg.Add(1)
-		// Launch a goroutine to save cache
-		go func(pipeline model.GenericYAML) {
-			// Decrement the counter when the goroutine completes.
-			defer wg.Done()
-			// write to cache
-			if !isCached(pipeline.Metadata.Id) {
-				pterm.Debug.Printf("caching: %s - %s\n", pipeline.Metadata.Name, pipeline.Metadata.Id)
-				pushToCache(pipeline)
-			}
-		}(pipeline)
-	}
-	// Wait for all caching to complete.
-	wg.Wait()
-
-	return renderedPipeline, nil
+	return pipelineCounter.Value(), nil
 }
 
 func ReadYAML(filePath string) (model.GenericYAML, error) {
@@ -68,22 +41,6 @@ func ReadYAML(filePath string) (model.GenericYAML, error) {
 		return model.GenericYAML{}, fmt.Errorf("file error: %v", err)
 	}
 	return readYAMLData(file)
-}
-
-func readYAMLData(data []byte) (model.GenericYAML, error) {
-	var err error
-	if currentTemplateFilter != nil {
-		data, err = currentTemplateFilter(data)
-		if err != nil {
-			return model.GenericYAML{}, err
-		}
-	}
-
-	genericYAML := model.NewGenericYAML()
-	if err := unmarshalYAML(data, genericYAML); err != nil {
-		return *genericYAML, err
-	}
-	return *genericYAML, nil
 }
 
 func unmarshalYAML(data []byte, v interface{}) error {
@@ -95,52 +52,57 @@ func unmarshalYAML(data []byte, v interface{}) error {
 	return nil
 }
 
-func mergeYAMLData(genericYAML model.GenericYAML, depth int, path string) error {
-	genericYAML.Metadata.RenderedId = len(renderedPipeline)
+func mergeYAMLData(genericYAML *model.GenericYAML, depth int, path string) error {
+	genericYAML.Metadata.Id = fmt.Sprint(pipelineCounter.Value())
+	pipelineCounter.Inc()
 	data, _ := yaml.Marshal(genericYAML)
 	genericYAML.Metadata.Id = fmt.Sprintf("%x", md5.Sum(data))
-	renderedPipeline = append(renderedPipeline, genericYAML)
 
-	if genericYAML.Kind == "step" {
-		return nil
-	}
+	if genericYAML.Kind != "step" {
 
-	depth++
-	if depth >= 50 {
-		return fmt.Errorf("max depth of 50 reached, possibly due to dependency loop in goss file")
-	}
-
-	pipeline, _ := genericYAML.ToPipeline()
-
-	for _, step := range pipeline.Spec.Steps {
-		fpath := filepath.Join(path, step)
-		matches, err := filepath.Glob(fpath)
-		if err != nil {
-			return fmt.Errorf("error in expanding glob pattern: %q", err)
+		depth++
+		if depth >= 50 {
+			return fmt.Errorf("max depth of 50 reached, possibly due to dependency loop in goss file")
 		}
-		if matches == nil {
-			return fmt.Errorf("no matched files were found: %q", fpath)
-		}
-		for _, match := range matches {
-			fdir := filepath.Dir(match)
-			j, err := ReadYAML(match)
-			if err != nil {
-				return fmt.Errorf("could not read json data in %s: %s", match, err)
-			}
-			j.Metadata.ParentId = genericYAML.Metadata.Id
-			genericYAML.Metadata.ChildrenIds = append(genericYAML.Metadata.ChildrenIds, j.Metadata.Id)
-			err = validateAndFillDefaultValues(&j)
-			if err != nil {
-				pterm.Error.Printf("ERROR: validation error in: %s\n", match)
-				return err
-			}
 
-			err = mergeYAMLData(j, depth, fdir)
+		pipeline, _ := genericYAML.ToPipeline()
+
+		for _, step := range pipeline.Spec.Steps {
+			step := step
+			fpath := filepath.Join(path, step)
+			matches, err := filepath.Glob(fpath)
 			if err != nil {
-				return err
+				return fmt.Errorf("error in expanding glob pattern: %q", err)
+			}
+			if matches == nil {
+				return fmt.Errorf("no matched files were found: %q", fpath)
+			}
+			for _, match := range matches {
+				fdir := filepath.Dir(match)
+				j, err := ReadYAML(match)
+				if err != nil {
+					return fmt.Errorf("could not read json data in %s: %s", match, err)
+				}
+				j.Metadata.ParentId = genericYAML.Metadata.Id
+				err = validateAndFillDefaultValues(&j)
+				if err != nil {
+					pterm.Error.Printf("ERROR: validation error in: %s\n", match)
+					return err
+				}
+
+				err = mergeYAMLData(&j, depth, fdir)
+				if err != nil {
+					return err
+				}
+				genericYAML.Metadata.ChildrenIds = append(genericYAML.Metadata.ChildrenIds, j.Metadata.Id)
 			}
 		}
+
 	}
+	storePipelineToDisk(*genericYAML)
+	pipelineCounter.Lock()
+	pterm.Debug.Printf("Store: %s\n", genericYAML.Metadata.Name)
+	pipelineCounter.Unlock()
 	return nil
 }
 
@@ -161,4 +123,27 @@ func validateAndFillDefaultValues(genericYAML *model.GenericYAML) error {
 	default:
 		return fmt.Errorf("ERROR: Kind Must Be pipeline or step, get: %s", genericYAML.Kind)
 	}
+}
+
+func storePipelineToDisk(genericYAML model.GenericYAML) {
+	if !IsCached(genericYAML.Metadata.Id) {
+		pterm.Debug.Printf("caching: %s - %s\n", genericYAML.Metadata.Name, genericYAML.Metadata.Id)
+		PushToCache(genericYAML)
+	}
+}
+
+func readYAMLData(data []byte) (model.GenericYAML, error) {
+	var err error
+	if currentTemplateFilter != nil {
+		data, err = currentTemplateFilter(data)
+		if err != nil {
+			return model.GenericYAML{}, err
+		}
+	}
+
+	genericYAML := model.NewGenericYAML()
+	if err := unmarshalYAML(data, genericYAML); err != nil {
+		return *genericYAML, err
+	}
+	return *genericYAML, nil
 }

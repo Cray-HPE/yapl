@@ -13,28 +13,28 @@ var outputDir string
 var p *pterm.ProgressbarPrinter
 
 func DocGenFromPipeline(cfg *Config) error {
-	outputDir = cfg.OutputDir
-	os.MkdirAll(outputDir, os.ModePerm)
-	renderedPipeline, err := RenderPipeline(cfg)
-	if err != nil {
-		return err
-	}
-	// Create progressbar as fork from the default progressbar.
-	p, _ = pterm.DefaultProgressbar.WithTotal(len(renderedPipeline)).WithTitle("Generating Documents").Start()
+	// outputDir = cfg.OutputDir
+	// os.MkdirAll(outputDir, os.ModePerm)
+	// renderedPipeline, err := RenderPipeline(cfg)
+	// if err != nil {
+	// 	return err
+	// }
+	// // Create progressbar as fork from the default progressbar.
+	// p, _ = pterm.DefaultProgressbar.WithTotal(len(renderedPipeline)).WithTitle("Generating Documents").Start()
 
-	for _, pipeline := range renderedPipeline {
-		if pipeline.Kind == "pipeline" {
-			pterm.Debug.Println(pterm.DefaultSection.WithLevel(1).WithIndentCharacter("==").Sprintf("Pipeline - %s\n", pipeline.Metadata.Name))
-			pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
-			writeDocToFile(pipeline.Metadata.Name, pipeline.Metadata.Description)
-			continue
-		}
-		if pipeline.Kind == "step" {
-			pterm.Debug.Println(pterm.DefaultSection.WithLevel(2).WithIndentCharacter("==").Sprintf("Step - %s\n", pipeline.Metadata.Name))
-			docGenFromStep(pipeline)
-			continue
-		}
-	}
+	// for _, pipeline := range renderedPipeline {
+	// 	if pipeline.Kind == "pipeline" {
+	// 		pterm.Debug.Println(pterm.DefaultSection.WithLevel(1).WithIndentCharacter("==").Sprintf("Pipeline - %s\n", pipeline.Metadata.Name))
+	// 		pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
+	// 		writeDocToFile(pipeline.Metadata.Name, pipeline.Metadata.Description)
+	// 		continue
+	// 	}
+	// 	if pipeline.Kind == "step" {
+	// 		pterm.Debug.Println(pterm.DefaultSection.WithLevel(2).WithIndentCharacter("==").Sprintf("Step - %s\n", pipeline.Metadata.Name))
+	// 		docGenFromStep(pipeline)
+	// 		continue
+	// 	}
+	// }
 	return nil
 }
 

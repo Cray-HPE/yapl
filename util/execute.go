@@ -14,29 +14,29 @@ import (
 var debug bool
 
 func ExecutePipeline(cfg *Config) error {
-	debug = cfg.Debug
-	renderedPipeline, err := RenderPipeline(cfg)
-	if err != nil {
-		return err
-	}
+	// debug = cfg.Debug
+	// renderedPipeline, err := RenderPipeline(cfg)
+	// if err != nil {
+	// 	return err
+	// }
 
-	for _, pipeline := range renderedPipeline {
-		if hasRunAlready(pipeline.Metadata.Id) {
-			pterm.Warning.Printf("Skip - %s: %s\n", pipeline.Kind, pipeline.Metadata.Name)
-			continue
-		}
-		if pipeline.Kind == "pipeline" {
-			executePipeline(pipeline)
-			continue
-		}
-		if pipeline.Kind == "step" {
-			err := executeStep(pipeline)
-			if err != nil {
-				return err
-			}
-			continue
-		}
-	}
+	// for _, pipeline := range renderedPipeline {
+	// 	if hasRunAlready(pipeline.Metadata.Id) {
+	// 		pterm.Warning.Printf("Skip - %s: %s\n", pipeline.Kind, pipeline.Metadata.Name)
+	// 		continue
+	// 	}
+	// 	if pipeline.Kind == "pipeline" {
+	// 		executePipeline(pipeline)
+	// 		continue
+	// 	}
+	// 	if pipeline.Kind == "step" {
+	// 		err := executeStep(pipeline)
+	// 		if err != nil {
+	// 			return err
+	// 		}
+	// 		continue
+	// 	}
+	// }
 
 	return nil
 }
@@ -58,7 +58,7 @@ func executePipeline(pipeline model.GenericYAML) error {
 	pterm.DefaultHeader.Printf("Pipeline: %s \n", pipeline.Metadata.Name)
 	pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
 	pipeline.Metadata.Completed = true
-	pushToCache(pipeline)
+	PushToCache(pipeline)
 	return nil
 }
 
@@ -85,7 +85,7 @@ func executeStep(pipeline model.GenericYAML) error {
 		}
 	}
 	pipeline.Metadata.Completed = true
-	pushToCache(pipeline)
+	PushToCache(pipeline)
 	return nil
 }
 

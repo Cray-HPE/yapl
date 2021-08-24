@@ -9,9 +9,9 @@ import (
 
 var CACHE_DIR = "/etc/cray/yapl/.cache"
 
-func pushToCache(genericYAML model.GenericYAML) error {
+func PushToCache(genericYAML model.GenericYAML) error {
 	os.MkdirAll(CACHE_DIR, os.ModePerm)
-	f, err := os.Create(CACHE_DIR + "/" + genericYAML.Metadata.Id)
+	f, err := os.Create(CACHE_DIR + "/" + string(genericYAML.Metadata.Id))
 	if err != nil {
 		return err
 	}
@@ -26,13 +26,13 @@ func pushToCache(genericYAML model.GenericYAML) error {
 	return nil
 }
 
-func popFromCache(id string) (model.GenericYAML, error) {
+func PopFromCache(id string) (model.GenericYAML, error) {
 	ret, err := ReadYAML(CACHE_DIR + "/" + id)
 	return ret, err
 }
 
-func hasRunAlready(id string) bool {
-	genericYAML, _ := popFromCache(id)
+func HasRunAlready(id string) bool {
+	genericYAML, _ := PopFromCache(id)
 	return genericYAML.Metadata.Completed
 }
 
@@ -40,7 +40,7 @@ func ClearCache() error {
 	return os.RemoveAll(CACHE_DIR)
 }
 
-func isCached(id string) bool {
+func IsCached(id string) bool {
 	if _, err := os.Stat(CACHE_DIR + "/" + id); os.IsNotExist(err) {
 		return false
 	}
