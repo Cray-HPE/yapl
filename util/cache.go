@@ -7,11 +7,20 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var CACHE_DIR = "/etc/cray/yapl/.cache"
+func getCacheDir() string {
+	res := "/etc/cray/yapl/.cache"
+	if mp := os.Getenv("CACHE_DIR"); mp != "" {
+		res = mp
+	}
+	return res
+}
 
-func pushToCache(genericYAML model.GenericYAML) error {
-	os.MkdirAll(CACHE_DIR, os.ModePerm)
-	f, err := os.Create(CACHE_DIR + "/" + genericYAML.Metadata.Id)
+func PushToCache(genericYAML model.GenericYAML) error {
+	if err := os.MkdirAll(getCacheDir(), os.ModePerm); err != nil {
+		return err
+	}
+
+	f, err := os.Create(getCacheDir() + "/" + string(genericYAML.Metadata.Id))
 	if err != nil {
 		return err
 	}
@@ -19,29 +28,28 @@ func pushToCache(genericYAML model.GenericYAML) error {
 	defer f.Close()
 	out, _ := yaml.Marshal(genericYAML)
 
-	_, err = f.Write(out)
-	if err != nil {
+	if _, err = f.Write(out); err != nil {
 		return err
 	}
 	return nil
 }
 
-func popFromCache(id string) (model.GenericYAML, error) {
-	ret, err := ReadYAML(CACHE_DIR + "/" + id)
+func PopFromCache(id string) (model.GenericYAML, error) {
+	ret, err := ReadYAML(getCacheDir() + "/" + id)
 	return ret, err
 }
 
-func hasRunAlready(id string) bool {
-	genericYAML, _ := popFromCache(id)
+func HasRunAlready(id string) bool {
+	genericYAML, _ := PopFromCache(id)
 	return genericYAML.Metadata.Completed
 }
 
 func ClearCache() error {
-	return os.RemoveAll(CACHE_DIR)
+	return os.RemoveAll(getCacheDir())
 }
 
-func isCached(id string) bool {
-	if _, err := os.Stat(CACHE_DIR + "/" + id); os.IsNotExist(err) {
+func IsCached(id string) bool {
+	if _, err := os.Stat(getCacheDir() + "/" + id); os.IsNotExist(err) {
 		return false
 	}
 	return true

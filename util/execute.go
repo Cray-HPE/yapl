@@ -15,28 +15,85 @@ var debug bool
 
 func ExecutePipeline(cfg *Config) error {
 	debug = cfg.Debug
-	renderedPipeline, err := RenderPipeline(cfg)
+	_, rootId, err := RenderPipeline(cfg)
 	if err != nil {
 		return err
 	}
 
-	for _, pipeline := range renderedPipeline {
-		if hasRunAlready(pipeline.Metadata.Id) {
-			pterm.Warning.Printf("Skip - %s: %s\n", pipeline.Kind, pipeline.Metadata.Name)
-			continue
+	return executePipeline(rootId)
+
+}
+
+func executePipeline(pipelineId string) error {
+	pipeline, err := PopFromCache(pipelineId)
+	if err != nil {
+		return err
+	}
+
+	if pipeline.Kind == "step" {
+		err := executeStep(pipeline)
+		if err != nil {
+			pterm.Info.Printf("Failed Pipeline/Step id: %s\n", pipeline.Metadata.Id)
 		}
-		if pipeline.Kind == "pipeline" {
-			executePipeline(pipeline)
-			continue
-		}
-		if pipeline.Kind == "step" {
-			err := executeStep(pipeline)
-			if err != nil {
+	} else {
+		pterm.DefaultHeader.Printf("Pipeline: %s \n", pipeline.Metadata.Name)
+		pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
+		for _, chilePipelineId := range pipeline.Metadata.ChildrenIds {
+			if err := executePipeline(chilePipelineId); err != nil {
 				return err
 			}
-			continue
+		}
+		pipeline.Metadata.Completed = true
+		if err := PushToCache(pipeline); err != nil {
+			return err
 		}
 	}
+	return nil
+}
+
+func executeStep(pipeline model.GenericYAML) error {
+	step, _ := pipeline.ToStep()
+	for _, job := range step.Spec.Jobs {
+		fmt.Println()
+		pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
+
+		err := execute(job.PreCondition, "Step: "+pipeline.Metadata.Name+" --- Checking Precondition")
+		if err != nil {
+			return err
+		}
+
+		err = execute(job.Action, "Step: "+pipeline.Metadata.Name+" --- Executing Action")
+		if err != nil {
+			return err
+		}
+
+		err = execute(job.PostValidation, "Step: "+pipeline.Metadata.Name+" --- Post action validation")
+		if err != nil {
+			return err
+		}
+	}
+	pipeline.Metadata.Completed = true
+	return PushToCache(pipeline)
+}
+
+func execute(runnable model.Runnable, name string) error {
+
+	var stdoutBuf, stderrBuf bytes.Buffer
+	stdout := bufio.NewWriter(&stdoutBuf)
+	stderr := bufio.NewWriter(&stderrBuf)
+	spinner, _ := pterm.DefaultSpinner.WithShowTimer(true).Start(name)
+
+	pterm.Debug.Println(MarkdownToText(runnable.Description))
+
+	err := runCommand(runnable.Command, stdout, stderr)
+	if err != nil {
+		spinner.Fail()
+		fmt.Println(stderrBuf.String())
+		pterm.FgRed.Println("Check the doc below for troubleshooting:")
+		fmt.Println(MarkdownToText(runnable.Troubleshooting))
+		return err
+	}
+	spinner.Success()
 
 	return nil
 }
@@ -51,60 +108,4 @@ func runCommand(cmd string, stdout io.Writer, stderr io.Writer) error {
 	command.Stderr = stderr
 
 	return command.Run()
-}
-
-func executePipeline(pipeline model.GenericYAML) error {
-
-	pterm.DefaultHeader.Printf("Pipeline: %s \n", pipeline.Metadata.Name)
-	pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
-	pipeline.Metadata.Completed = true
-	pushToCache(pipeline)
-	return nil
-}
-
-func executeStep(pipeline model.GenericYAML) error {
-	step, _ := pipeline.ToStep()
-	for _, job := range step.Spec.Jobs {
-		fmt.Println()
-		pterm.Info.Printf("Step: %s\n", pipeline.Metadata.Name)
-		pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
-
-		err := execute(job.PreCondition, "Checking Precondition")
-		if err != nil {
-			return err
-		}
-
-		err = execute(job.Action, "Executing Action")
-		if err != nil {
-			return err
-		}
-
-		err = execute(job.PostValidation, "Post action validation")
-		if err != nil {
-			return err
-		}
-	}
-	pipeline.Metadata.Completed = true
-	pushToCache(pipeline)
-	return nil
-}
-
-func execute(runnable model.Runnable, name string) error {
-
-	var stdoutBuf, stderrBuf bytes.Buffer
-	stdout := bufio.NewWriter(&stdoutBuf)
-	stderr := bufio.NewWriter(&stderrBuf)
-	spinner, _ := pterm.DefaultSpinner.Start(name + " ...")
-
-	err := runCommand(runnable.Command, stdout, stderr)
-	if err != nil {
-		spinner.Fail()
-		fmt.Println(stderrBuf.String())
-		pterm.FgRed.Println("Check the doc below for troubleshooting:")
-		fmt.Println(MarkdownToText(runnable.Troubleshooting))
-		return err
-	}
-	spinner.Success()
-	pterm.Debug.Println(MarkdownToText(runnable.Description))
-	return nil
 }

@@ -3,6 +3,7 @@ package util
 import (
 	"fmt"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/Cray-HPE/yapl/model"
@@ -14,31 +15,42 @@ var p *pterm.ProgressbarPrinter
 
 func DocGenFromPipeline(cfg *Config) error {
 	outputDir = cfg.OutputDir
-	os.MkdirAll(outputDir, os.ModePerm)
-	renderedPipeline, err := RenderPipeline(cfg)
+	if err := os.MkdirAll(outputDir, os.ModePerm); err != nil {
+		return err
+	}
+
+	numOfPipelines, rootId, err := RenderPipeline(cfg)
 	if err != nil {
 		return err
 	}
 	// Create progressbar as fork from the default progressbar.
-	p, _ = pterm.DefaultProgressbar.WithTotal(len(renderedPipeline)).WithTitle("Generating Documents").Start()
+	p, _ = pterm.DefaultProgressbar.WithTotal(numOfPipelines).WithTitle("Generating Documents").Start()
+	return docGenFromPipeline(rootId)
+}
 
-	for _, pipeline := range renderedPipeline {
-		if pipeline.Kind == "pipeline" {
-			pterm.Debug.Println(pterm.DefaultSection.WithLevel(1).WithIndentCharacter("==").Sprintf("Pipeline - %s\n", pipeline.Metadata.Name))
-			pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
-			writeDocToFile(pipeline.Metadata.Name, pipeline.Metadata.Description)
-			continue
+func docGenFromPipeline(id string) error {
+	pipeline, _ := PopFromCache(id)
+	if pipeline.Kind == "pipeline" {
+		if err := writeDocToFile(pipeline.Metadata.Name, pipeline.Metadata.Description); err != nil {
+			return err
 		}
-		if pipeline.Kind == "step" {
-			pterm.Debug.Println(pterm.DefaultSection.WithLevel(2).WithIndentCharacter("==").Sprintf("Step - %s\n", pipeline.Metadata.Name))
-			docGenFromStep(pipeline)
-			continue
+		var wg sync.WaitGroup
+		for _, childId := range pipeline.Metadata.ChildrenIds {
+			wg.Add(1)
+			go func(id string) {
+				docGenFromPipeline(id) //nolint
+				wg.Done()
+			}(childId)
 		}
+		wg.Wait()
+	}
+	if pipeline.Kind == "step" {
+		return docGenFromStep(pipeline)
 	}
 	return nil
 }
 
-func docGenFromStep(pipeline model.GenericYAML) {
+func docGenFromStep(pipeline model.GenericYAML) error {
 	step, _ := pipeline.ToStep()
 	content := fmt.Sprintf("%s\n", step.Metadata.Description)
 	for _, job := range step.Spec.Jobs {
@@ -50,7 +62,7 @@ func docGenFromStep(pipeline model.GenericYAML) {
 		pterm.Debug.Println(MarkdownToText(job.PostValidation.Description))
 		content += fmt.Sprintf("# Precondtion \n %s \n# Action \n %s \n# Post Validation \n %s \n", job.PreCondition.Description, job.Action.Description, job.PostValidation.Description)
 	}
-	writeDocToFile(step.Metadata.Name, content)
+	return writeDocToFile(step.Metadata.Name, content)
 }
 
 func writeDocToFile(filename string, content string) error {

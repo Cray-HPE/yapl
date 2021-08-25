@@ -28,7 +28,7 @@ func main() {
 		cli.StringFlag{
 			Name:   "vars",
 			Usage:  "json/yaml file containing variables for template",
-			EnvVar: "GOSS_VARS",
+			EnvVar: "YAPL_VARS",
 		},
 		cli.BoolFlag{
 			Name: "no-color",
@@ -46,7 +46,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				_, err := util.RenderPipeline(newRuntimeConfigFromCLI(c))
+				_, _, err := util.RenderPipeline(newRuntimeConfigFromCLI(c))
 				if err != nil {
 					return err
 				}
@@ -104,7 +104,7 @@ func main() {
 	}
 }
 
-// converts a cli context into a goss Config
+// converts a cli context into a yapl Config
 func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 	cfg := &util.Config{
 		File:      c.GlobalString("file"),
@@ -125,7 +125,10 @@ func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 		pterm.DisableDebugMessages()
 	}
 	if cfg.NoCache {
-		util.ClearCache()
+		err := util.ClearCache()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	return cfg
