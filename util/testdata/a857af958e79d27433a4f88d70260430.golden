@@ -1,0 +1,52 @@
+kind: pipeline
+metadata:
+  name: Demo Pipeline
+  description: |-
+    # Demo pipeline
+    This is a demo pipeline that does some simple file operations
+
+    It is just an exmaple of what the framework can do
+    ## create file
+    Eget felis eget nunc lobortis mattis aliquam faucibus purus in. Vulputate
+    enim nulla aliquet porttitor lacus luctus accumsan tortor posuere.
+    Ultrices dui sapien eget mi proin sed. Neque aliquam vestibulum morbi
+    blandit cursus risus at ultrices. Etiam dignissim diam quis enim lobortis
+    scelerisque fermentum dui. Nulla posuere sollicitudin aliquam ultrices
+    sagittis. Urna nec tincidunt praesent semper. Enim nunc faucibus a
+    pellentesque sit.
+
+    ## append text to the file
+    Eget felis eget nunc lobortis mattis aliquam faucibus purus in. Vulputate
+    enim nulla aliquet porttitor lacus luctus accumsan tortor posuere.
+    Ultrices dui sapien eget mi proin sed. Neque aliquam vestibulum morbi
+    blandit cursus risus at ultrices. Etiam dignissim diam quis enim lobortis
+    scelerisque fermentum dui. Nulla posuere sollicitudin aliquam ultrices
+    sagittis. Urna nec tincidunt praesent semper. Enim nunc faucibus a
+    pellentesque sit.
+
+    ## delete file
+    Eget felis eget nunc lobortis mattis aliquam faucibus purus in. Vulputate
+    enim nulla aliquet porttitor lacus luctus accumsan tortor posuere.
+    Ultrices dui sapien eget mi proin sed. Neque aliquam vestibulum morbi
+    blandit cursus risus at ultrices. Etiam dignissim diam quis enim lobortis
+    scelerisque fermentum dui. Nulla posuere sollicitudin aliquam ultrices
+    sagittis. Urna nec tincidunt praesent semper. Enim nunc faucibus a
+    pellentesque sit.
+
+    ## delete file again
+    this will fail because file doesn't exist
+
+    ![logo](https://ca.slack-edge.com/E01LD9FH0JZ-U01T66ZG20J-369a4b616e69-72)
+  id: a857af958e79d27433a4f88d70260430
+  childrenids:
+  - b7751de352909e2e5f5410fe83ed6cad
+  - 1c06c903184f9165a89acdf2187af212
+  - 5f6b12f72a74f4a2dc203c54921e975d
+  - 1d29b0db1ba0450523b82d419c7d2e9e
+  completed: false
+spec:
+  steps:
+  - ../steps/create-file.yaml
+  - ../steps/append-text.yaml
+  - ../steps/delete-file.yaml
+  - ../steps/delete-file.yaml

@@ -7,11 +7,17 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var CACHE_DIR = "/etc/cray/yapl/.cache"
+func getCacheDir() string {
+	res := "/etc/cray/yapl/.cache"
+	if mp := os.Getenv("CACHE_DIR"); mp != "" {
+		res = mp
+	}
+	return res
+}
 
 func PushToCache(genericYAML model.GenericYAML) error {
-	os.MkdirAll(CACHE_DIR, os.ModePerm)
-	f, err := os.Create(CACHE_DIR + "/" + string(genericYAML.Metadata.Id))
+	os.MkdirAll(getCacheDir(), os.ModePerm)
+	f, err := os.Create(getCacheDir() + "/" + string(genericYAML.Metadata.Id))
 	if err != nil {
 		return err
 	}
@@ -27,7 +33,7 @@ func PushToCache(genericYAML model.GenericYAML) error {
 }
 
 func PopFromCache(id string) (model.GenericYAML, error) {
-	ret, err := ReadYAML(CACHE_DIR + "/" + id)
+	ret, err := ReadYAML(getCacheDir() + "/" + id)
 	return ret, err
 }
 
@@ -37,11 +43,11 @@ func HasRunAlready(id string) bool {
 }
 
 func ClearCache() error {
-	return os.RemoveAll(CACHE_DIR)
+	return os.RemoveAll(getCacheDir())
 }
 
 func IsCached(id string) bool {
-	if _, err := os.Stat(CACHE_DIR + "/" + id); os.IsNotExist(err) {
+	if _, err := os.Stat(getCacheDir() + "/" + id); os.IsNotExist(err) {
 		return false
 	}
 	return true

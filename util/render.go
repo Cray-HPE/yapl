@@ -16,7 +16,7 @@ var currentTemplateFilter TemplateFilter
 var validate *validator.Validate
 var pipelineCounter SafeCounter
 
-func RenderPipeline(cfg *Config) (int, error) {
+func RenderPipeline(cfg *Config) (int, string, error) {
 	pipelineCounter = SafeCounter{}
 
 	validate = validator.New()
@@ -24,15 +24,15 @@ func RenderPipeline(cfg *Config) (int, error) {
 
 	tmpYaml, err := ReadYAML(cfg.File)
 	if err != nil {
-		return 0, err
+		return 0, "", err
 	}
 
 	err = mergeYAMLData(&tmpYaml, 0, filepath.Dir(cfg.File))
 	if err != nil {
-		return 0, err
+		return 0, "", err
 	}
 
-	return pipelineCounter.Value(), nil
+	return pipelineCounter.Value(), tmpYaml.Metadata.Id, nil
 }
 
 func ReadYAML(filePath string) (model.GenericYAML, error) {
@@ -53,10 +53,6 @@ func unmarshalYAML(data []byte, v interface{}) error {
 }
 
 func mergeYAMLData(genericYAML *model.GenericYAML, depth int, path string) error {
-	genericYAML.Metadata.Id = fmt.Sprint(pipelineCounter.Value())
-	pipelineCounter.Inc()
-	data, _ := yaml.Marshal(genericYAML)
-	genericYAML.Metadata.Id = fmt.Sprintf("%x", md5.Sum(data))
 
 	if genericYAML.Kind != "step" {
 
@@ -83,7 +79,6 @@ func mergeYAMLData(genericYAML *model.GenericYAML, depth int, path string) error
 				if err != nil {
 					return fmt.Errorf("could not read json data in %s: %s", match, err)
 				}
-				j.Metadata.ParentId = genericYAML.Metadata.Id
 				err = validateAndFillDefaultValues(&j)
 				if err != nil {
 					pterm.Error.Printf("ERROR: validation error in: %s\n", match)
@@ -99,6 +94,10 @@ func mergeYAMLData(genericYAML *model.GenericYAML, depth int, path string) error
 		}
 
 	}
+	genericYAML.Metadata.Id = fmt.Sprint(pipelineCounter.Value())
+	pipelineCounter.Inc()
+	data, _ := yaml.Marshal(genericYAML)
+	genericYAML.Metadata.Id = fmt.Sprintf("%x", md5.Sum(data))
 	storePipelineToDisk(*genericYAML)
 	pipelineCounter.Lock()
 	pterm.Debug.Printf("Store: %s\n", genericYAML.Metadata.Name)

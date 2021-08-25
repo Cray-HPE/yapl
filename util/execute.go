@@ -14,51 +14,37 @@ import (
 var debug bool
 
 func ExecutePipeline(cfg *Config) error {
-	// debug = cfg.Debug
-	// renderedPipeline, err := RenderPipeline(cfg)
-	// if err != nil {
-	// 	return err
-	// }
+	debug = cfg.Debug
+	_, rootId, err := RenderPipeline(cfg)
+	if err != nil {
+		return err
+	}
 
-	// for _, pipeline := range renderedPipeline {
-	// 	if hasRunAlready(pipeline.Metadata.Id) {
-	// 		pterm.Warning.Printf("Skip - %s: %s\n", pipeline.Kind, pipeline.Metadata.Name)
-	// 		continue
-	// 	}
-	// 	if pipeline.Kind == "pipeline" {
-	// 		executePipeline(pipeline)
-	// 		continue
-	// 	}
-	// 	if pipeline.Kind == "step" {
-	// 		err := executeStep(pipeline)
-	// 		if err != nil {
-	// 			return err
-	// 		}
-	// 		continue
-	// 	}
-	// }
+	executePipeline(rootId)
 
 	return nil
 }
 
-func runCommand(cmd string, stdout io.Writer, stderr io.Writer) error {
-	command := exec.Command("sh", "-c", cmd)
-	if debug {
-		command = exec.Command("sh", "-cx", cmd)
+func executePipeline(pipelineId string) error {
+	pipeline, err := PopFromCache(pipelineId)
+	if err != nil {
+		return err
 	}
-	command.Stdin = nil
-	command.Stdout = stdout
-	command.Stderr = stderr
 
-	return command.Run()
-}
-
-func executePipeline(pipeline model.GenericYAML) error {
-
-	pterm.DefaultHeader.Printf("Pipeline: %s \n", pipeline.Metadata.Name)
-	pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
-	pipeline.Metadata.Completed = true
-	PushToCache(pipeline)
+	if pipeline.Kind == "step" {
+		err := executeStep(pipeline)
+		if err != nil {
+			pterm.Info.Printf("Failed Pipeline/Step id: %s\n", pipeline.Metadata.Id)
+		}
+	} else {
+		pterm.DefaultHeader.Printf("Pipeline: %s \n", pipeline.Metadata.Name)
+		pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
+		for _, chilePipelineId := range pipeline.Metadata.ChildrenIds {
+			executePipeline(chilePipelineId)
+		}
+		pipeline.Metadata.Completed = true
+		PushToCache(pipeline)
+	}
 	return nil
 }
 
@@ -66,20 +52,19 @@ func executeStep(pipeline model.GenericYAML) error {
 	step, _ := pipeline.ToStep()
 	for _, job := range step.Spec.Jobs {
 		fmt.Println()
-		pterm.Info.Printf("Step: %s\n", pipeline.Metadata.Name)
 		pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
 
-		err := execute(job.PreCondition, "Checking Precondition")
+		err := execute(job.PreCondition, "Step: "+pipeline.Metadata.Name+" --- Checking Precondition")
 		if err != nil {
 			return err
 		}
 
-		err = execute(job.Action, "Executing Action")
+		err = execute(job.Action, "Step: "+pipeline.Metadata.Name+" --- Executing Action")
 		if err != nil {
 			return err
 		}
 
-		err = execute(job.PostValidation, "Post action validation")
+		err = execute(job.PostValidation, "Step: "+pipeline.Metadata.Name+" --- Post action validation")
 		if err != nil {
 			return err
 		}
@@ -94,7 +79,9 @@ func execute(runnable model.Runnable, name string) error {
 	var stdoutBuf, stderrBuf bytes.Buffer
 	stdout := bufio.NewWriter(&stdoutBuf)
 	stderr := bufio.NewWriter(&stderrBuf)
-	spinner, _ := pterm.DefaultSpinner.Start(name + " ...")
+	spinner, _ := pterm.DefaultSpinner.WithShowTimer(true).Start(name)
+
+	pterm.Debug.Println(MarkdownToText(runnable.Description))
 
 	err := runCommand(runnable.Command, stdout, stderr)
 	if err != nil {
@@ -105,6 +92,18 @@ func execute(runnable model.Runnable, name string) error {
 		return err
 	}
 	spinner.Success()
-	pterm.Debug.Println(MarkdownToText(runnable.Description))
+
 	return nil
+}
+
+func runCommand(cmd string, stdout io.Writer, stderr io.Writer) error {
+	command := exec.Command("sh", "-c", cmd)
+	if debug {
+		command = exec.Command("sh", "-cx", cmd)
+	}
+	command.Stdin = nil
+	command.Stdout = stdout
+	command.Stderr = stderr
+
+	return command.Run()
 }

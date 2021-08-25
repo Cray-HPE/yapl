@@ -46,7 +46,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				_, err := util.RenderPipeline(newRuntimeConfigFromCLI(c))
+				_, _, err := util.RenderPipeline(newRuntimeConfigFromCLI(c))
 				if err != nil {
 					return err
 				}
