@@ -1,14 +1,17 @@
 package util
 
 import (
+	"fmt"
+	"os"
 	"testing"
+	"time"
 
 	"github.com/Cray-HPE/yapl/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_runCommand(t *testing.T) {
-
+	os.Setenv("CACHE_DIR", "/tmp/"+fmt.Sprint(time.Now().Unix()))
 	tests := []struct {
 		name    string
 		cmd     string
@@ -37,6 +40,7 @@ func Test_runCommand(t *testing.T) {
 }
 
 func Test_executeStep(t *testing.T) {
+	os.Setenv("CACHE_DIR", "/tmp/"+fmt.Sprint(time.Now().Unix()))
 	tests := []struct {
 		name    string
 		step    model.GenericYAML
@@ -88,6 +92,9 @@ func Test_executeStep(t *testing.T) {
 			name: "happy path",
 			step: model.GenericYAML{
 				Kind: "step",
+				Metadata: model.Metadata{
+					Id: "happy path",
+				},
 				Spec: map[string]interface{}{
 					"jobs": []map[string]interface{}{
 						{
