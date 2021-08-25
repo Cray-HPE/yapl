@@ -53,7 +53,7 @@ func unmarshalYAML(data []byte, v interface{}) error {
 }
 
 func mergeYAMLData(genericYAML *model.GenericYAML, depth int, path string) error {
-	MAX_DEPTH := 50
+	MAX_DEPTH := 1000
 	if genericYAML.Kind != "step" {
 
 		depth++
