@@ -104,7 +104,7 @@ func main() {
 	}
 }
 
-// converts a cli context into a goss Config
+// converts a cli context into a yapl Config
 func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 	cfg := &util.Config{
 		File:      c.GlobalString("file"),

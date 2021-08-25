@@ -53,12 +53,12 @@ func unmarshalYAML(data []byte, v interface{}) error {
 }
 
 func mergeYAMLData(genericYAML *model.GenericYAML, depth int, path string) error {
-
+	MAX_DEPTH := 50
 	if genericYAML.Kind != "step" {
 
 		depth++
-		if depth >= 50 {
-			return fmt.Errorf("max depth of 50 reached, possibly due to dependency loop in goss file")
+		if depth >= MAX_DEPTH {
+			return fmt.Errorf("max depth of %d reached, possibly due to dependency loop in yapl pipeline file", MAX_DEPTH)
 		}
 
 		pipeline, _ := genericYAML.ToPipeline()
