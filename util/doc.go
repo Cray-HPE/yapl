@@ -3,6 +3,7 @@ package util
 import (
 	"fmt"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/Cray-HPE/yapl/model"
@@ -13,29 +14,35 @@ var outputDir string
 var p *pterm.ProgressbarPrinter
 
 func DocGenFromPipeline(cfg *Config) error {
-	// outputDir = cfg.OutputDir
-	// os.MkdirAll(outputDir, os.ModePerm)
-	// renderedPipeline, err := RenderPipeline(cfg)
-	// if err != nil {
-	// 	return err
-	// }
-	// // Create progressbar as fork from the default progressbar.
-	// p, _ = pterm.DefaultProgressbar.WithTotal(len(renderedPipeline)).WithTitle("Generating Documents").Start()
-
-	// for _, pipeline := range renderedPipeline {
-	// 	if pipeline.Kind == "pipeline" {
-	// 		pterm.Debug.Println(pterm.DefaultSection.WithLevel(1).WithIndentCharacter("==").Sprintf("Pipeline - %s\n", pipeline.Metadata.Name))
-	// 		pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
-	// 		writeDocToFile(pipeline.Metadata.Name, pipeline.Metadata.Description)
-	// 		continue
-	// 	}
-	// 	if pipeline.Kind == "step" {
-	// 		pterm.Debug.Println(pterm.DefaultSection.WithLevel(2).WithIndentCharacter("==").Sprintf("Step - %s\n", pipeline.Metadata.Name))
-	// 		docGenFromStep(pipeline)
-	// 		continue
-	// 	}
-	// }
+	outputDir = cfg.OutputDir
+	os.MkdirAll(outputDir, os.ModePerm)
+	numOfPipelines, rootId, err := RenderPipeline(cfg)
+	if err != nil {
+		return err
+	}
+	// Create progressbar as fork from the default progressbar.
+	p, _ = pterm.DefaultProgressbar.WithTotal(numOfPipelines).WithTitle("Generating Documents").Start()
+	docGenFromPipeline(rootId)
 	return nil
+}
+
+func docGenFromPipeline(id string) {
+	pipeline, _ := PopFromCache(id)
+	if pipeline.Kind == "pipeline" {
+		writeDocToFile(pipeline.Metadata.Name, pipeline.Metadata.Description)
+		var wg sync.WaitGroup
+		for _, childId := range pipeline.Metadata.ChildrenIds {
+			wg.Add(1)
+			go func(id string) {
+				docGenFromPipeline(id)
+				wg.Done()
+			}(childId)
+		}
+		wg.Wait()
+	}
+	if pipeline.Kind == "step" {
+		docGenFromStep(pipeline)
+	}
 }
 
 func docGenFromStep(pipeline model.GenericYAML) {
