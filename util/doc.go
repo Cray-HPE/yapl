@@ -15,37 +15,42 @@ var p *pterm.ProgressbarPrinter
 
 func DocGenFromPipeline(cfg *Config) error {
 	outputDir = cfg.OutputDir
-	os.MkdirAll(outputDir, os.ModePerm)
+	if err := os.MkdirAll(outputDir, os.ModePerm); err != nil {
+		return err
+	}
+
 	numOfPipelines, rootId, err := RenderPipeline(cfg)
 	if err != nil {
 		return err
 	}
 	// Create progressbar as fork from the default progressbar.
 	p, _ = pterm.DefaultProgressbar.WithTotal(numOfPipelines).WithTitle("Generating Documents").Start()
-	docGenFromPipeline(rootId)
-	return nil
+	return docGenFromPipeline(rootId)
 }
 
-func docGenFromPipeline(id string) {
+func docGenFromPipeline(id string) error {
 	pipeline, _ := PopFromCache(id)
 	if pipeline.Kind == "pipeline" {
-		writeDocToFile(pipeline.Metadata.Name, pipeline.Metadata.Description)
+		if err := writeDocToFile(pipeline.Metadata.Name, pipeline.Metadata.Description); err != nil {
+			return err
+		}
 		var wg sync.WaitGroup
 		for _, childId := range pipeline.Metadata.ChildrenIds {
 			wg.Add(1)
 			go func(id string) {
-				docGenFromPipeline(id)
+				docGenFromPipeline(id) //nolint
 				wg.Done()
 			}(childId)
 		}
 		wg.Wait()
 	}
 	if pipeline.Kind == "step" {
-		docGenFromStep(pipeline)
+		return docGenFromStep(pipeline)
 	}
+	return nil
 }
 
-func docGenFromStep(pipeline model.GenericYAML) {
+func docGenFromStep(pipeline model.GenericYAML) error {
 	step, _ := pipeline.ToStep()
 	content := fmt.Sprintf("%s\n", step.Metadata.Description)
 	for _, job := range step.Spec.Jobs {
@@ -57,7 +62,7 @@ func docGenFromStep(pipeline model.GenericYAML) {
 		pterm.Debug.Println(MarkdownToText(job.PostValidation.Description))
 		content += fmt.Sprintf("# Precondtion \n %s \n# Action \n %s \n# Post Validation \n %s \n", job.PreCondition.Description, job.Action.Description, job.PostValidation.Description)
 	}
-	writeDocToFile(step.Metadata.Name, content)
+	return writeDocToFile(step.Metadata.Name, content)
 }
 
 func writeDocToFile(filename string, content string) error {

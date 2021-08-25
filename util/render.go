@@ -98,7 +98,9 @@ func mergeYAMLData(genericYAML *model.GenericYAML, depth int, path string) error
 	pipelineCounter.Inc()
 	data, _ := yaml.Marshal(genericYAML)
 	genericYAML.Metadata.Id = fmt.Sprintf("%x", md5.Sum(data))
-	storePipelineToDisk(*genericYAML)
+	if err := storePipelineToDisk(*genericYAML); err != nil {
+		return err
+	}
 	pipelineCounter.Lock()
 	pterm.Debug.Printf("Store: %s\n", genericYAML.Metadata.Name)
 	pipelineCounter.Unlock()
@@ -124,11 +126,12 @@ func validateAndFillDefaultValues(genericYAML *model.GenericYAML) error {
 	}
 }
 
-func storePipelineToDisk(genericYAML model.GenericYAML) {
+func storePipelineToDisk(genericYAML model.GenericYAML) error {
 	if !IsCached(genericYAML.Metadata.Id) {
 		pterm.Debug.Printf("caching: %s - %s\n", genericYAML.Metadata.Name, genericYAML.Metadata.Id)
-		PushToCache(genericYAML)
+		return PushToCache(genericYAML)
 	}
+	return nil
 }
 
 func readYAMLData(data []byte) (model.GenericYAML, error) {

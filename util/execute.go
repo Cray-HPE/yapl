@@ -20,9 +20,8 @@ func ExecutePipeline(cfg *Config) error {
 		return err
 	}
 
-	executePipeline(rootId)
+	return executePipeline(rootId)
 
-	return nil
 }
 
 func executePipeline(pipelineId string) error {
@@ -40,10 +39,14 @@ func executePipeline(pipelineId string) error {
 		pterm.DefaultHeader.Printf("Pipeline: %s \n", pipeline.Metadata.Name)
 		pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
 		for _, chilePipelineId := range pipeline.Metadata.ChildrenIds {
-			executePipeline(chilePipelineId)
+			if err := executePipeline(chilePipelineId); err != nil {
+				return err
+			}
 		}
 		pipeline.Metadata.Completed = true
-		PushToCache(pipeline)
+		if err := PushToCache(pipeline); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -70,8 +73,7 @@ func executeStep(pipeline model.GenericYAML) error {
 		}
 	}
 	pipeline.Metadata.Completed = true
-	PushToCache(pipeline)
-	return nil
+	return PushToCache(pipeline)
 }
 
 func execute(runnable model.Runnable, name string) error {

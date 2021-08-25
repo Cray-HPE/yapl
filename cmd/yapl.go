@@ -125,7 +125,10 @@ func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 		pterm.DisableDebugMessages()
 	}
 	if cfg.NoCache {
-		util.ClearCache()
+		err := util.ClearCache()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	return cfg

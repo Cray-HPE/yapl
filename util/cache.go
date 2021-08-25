@@ -16,7 +16,10 @@ func getCacheDir() string {
 }
 
 func PushToCache(genericYAML model.GenericYAML) error {
-	os.MkdirAll(getCacheDir(), os.ModePerm)
+	if err := os.MkdirAll(getCacheDir(), os.ModePerm); err != nil {
+		return err
+	}
+
 	f, err := os.Create(getCacheDir() + "/" + string(genericYAML.Metadata.Id))
 	if err != nil {
 		return err
@@ -25,8 +28,7 @@ func PushToCache(genericYAML model.GenericYAML) error {
 	defer f.Close()
 	out, _ := yaml.Marshal(genericYAML)
 
-	_, err = f.Write(out)
-	if err != nil {
+	if _, err = f.Write(out); err != nil {
 		return err
 	}
 	return nil
