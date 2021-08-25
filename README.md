@@ -6,7 +6,7 @@ Yet Another Pipeline Language
 ----
 ### What is YAPL?
 
-Goss is a Yaml based pipeline orchestration tool for executing/managing pipeline workflows. It is best suited for a complicated installation process that involves many moving parts
+YAPL is a Yaml based pipeline orchestration tool for executing/managing pipeline workflows. It is best suited for a complicated installation process that involves many moving parts
 
 ### Why YAPL
 
@@ -39,7 +39,7 @@ COMMANDS:
 
 GLOBAL OPTIONS:
    --file value, -f value  Pipeline file to read from (default: "./pipeline.yaml") [$PIPELINE_FILE]
-   --vars value            json/yaml file containing variables for template [$GOSS_VARS]
+   --vars value            json/yaml file containing variables for template [$YAPL_VARS]
    --no-color              
    --help, -h              show help
 ```

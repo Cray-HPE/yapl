@@ -28,7 +28,7 @@ func main() {
 		cli.StringFlag{
 			Name:   "vars",
 			Usage:  "json/yaml file containing variables for template",
-			EnvVar: "GOSS_VARS",
+			EnvVar: "YAPL_VARS",
 		},
 		cli.BoolFlag{
 			Name: "no-color",
