@@ -31,7 +31,7 @@ func Test_runCommand(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := runCommand(tt.cmd, nil, nil)
+			err := runCommand(tt.cmd, nil)
 
 			assert.Equal(t, tt.wantErr, err != nil, "has error")
 			t.Log(err)
@@ -50,8 +50,9 @@ func Test_executeStep(t *testing.T) {
 		{
 			name: "fail pre condition",
 			step: model.GenericYAML{
-				Kind: "step",
-				Spec: map[string]interface{}{
+				Kind:     "step",
+				Metadata: &model.Metadata{},
+				Spec: &map[string]interface{}{
 					"jobs": []map[string]interface{}{
 						{
 							"preCondition": model.Runnable{
@@ -69,8 +70,9 @@ func Test_executeStep(t *testing.T) {
 		{
 			name: "fail action",
 			step: model.GenericYAML{
-				Kind: "step",
-				Spec: map[string]interface{}{
+				Kind:     "step",
+				Metadata: &model.Metadata{},
+				Spec: &map[string]interface{}{
 					"jobs": []map[string]interface{}{
 						{
 							"preCondition": model.Runnable{
@@ -92,10 +94,10 @@ func Test_executeStep(t *testing.T) {
 			name: "happy path",
 			step: model.GenericYAML{
 				Kind: "step",
-				Metadata: model.Metadata{
+				Metadata: &model.Metadata{
 					Id: "happy path",
 				},
-				Spec: map[string]interface{}{
+				Spec: &map[string]interface{}{
 					"jobs": []map[string]interface{}{
 						{
 							"preCondition": model.Runnable{
@@ -106,7 +108,7 @@ func Test_executeStep(t *testing.T) {
 								Description: "this is a description",
 								Command:     "exit 0",
 							},
-							"errorHandling": model.Runnable{},
+							"postValidation": model.Runnable{Description: ""},
 						},
 					},
 				},
@@ -117,7 +119,7 @@ func Test_executeStep(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			err := executeStep(tt.step)
+			err := executeStep(&tt.step)
 
 			assert.Equal(t, tt.wantErr, err != nil, "has error")
 			t.Log(err)

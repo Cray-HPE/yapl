@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 
 	"github.com/Cray-HPE/yapl/model"
@@ -31,7 +32,7 @@ func executePipeline(pipelineId string) error {
 	}
 
 	if pipeline.Kind == "step" {
-		err := executeStep(pipeline)
+		err := executeStep(&pipeline)
 		if err != nil {
 			pterm.Info.Printf("Failed Pipeline/Step id: %s\n", pipeline.Metadata.Id)
 		}
@@ -51,61 +52,67 @@ func executePipeline(pipelineId string) error {
 	return nil
 }
 
-func executeStep(pipeline model.GenericYAML) error {
+func executeStep(pipeline *model.GenericYAML) error {
 	step, _ := pipeline.ToStep()
 	for _, job := range step.Spec.Jobs {
 		fmt.Println()
 		pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
 
 		err := execute(job.PreCondition, "Step: "+pipeline.Metadata.Name+" --- Checking Precondition")
+		PushToCache(step.ToGeneric())
 		if err != nil {
 			return err
 		}
 
 		err = execute(job.Action, "Step: "+pipeline.Metadata.Name+" --- Executing Action")
+		PushToCache(step.ToGeneric())
 		if err != nil {
 			return err
 		}
 
 		err = execute(job.PostValidation, "Step: "+pipeline.Metadata.Name+" --- Post action validation")
+		PushToCache(step.ToGeneric())
 		if err != nil {
 			return err
 		}
 	}
 	pipeline.Metadata.Completed = true
-	return PushToCache(pipeline)
+	PushToCache(step.ToGeneric())
+	return nil
 }
 
-func execute(runnable model.Runnable, name string) error {
+func execute(runnable *model.Runnable, name string) error {
 
-	var stdoutBuf, stderrBuf bytes.Buffer
-	stdout := bufio.NewWriter(&stdoutBuf)
-	stderr := bufio.NewWriter(&stderrBuf)
+	var outputBuf bytes.Buffer
+	output := bufio.NewWriter(&outputBuf)
 	spinner, _ := pterm.DefaultSpinner.WithShowTimer(true).Start(name)
 
 	pterm.Debug.Println(MarkdownToText(runnable.Description))
 
-	err := runCommand(runnable.Command, stdout, stderr)
+	err := runCommand(runnable.Command, output)
+	runnable.Output = outputBuf.String()
 	if err != nil {
 		spinner.Fail()
-		fmt.Println(stderrBuf.String())
+		fmt.Println(runnable.Output)
 		pterm.FgRed.Println("Check the doc below for troubleshooting:")
 		fmt.Println(MarkdownToText(runnable.Troubleshooting))
 		return err
 	}
 	spinner.Success()
-
+	if os.Getenv("ConsoleOutput") == "true" {
+		fmt.Println(runnable.Output)
+	}
 	return nil
 }
 
-func runCommand(cmd string, stdout io.Writer, stderr io.Writer) error {
+func runCommand(cmd string, output io.Writer) error {
 	command := exec.Command("sh", "-c", cmd)
 	if debug {
 		command = exec.Command("sh", "-cx", cmd)
 	}
 	command.Stdin = nil
-	command.Stdout = stdout
-	command.Stderr = stderr
+	command.Stdout = output
+	command.Stderr = output
 
 	return command.Run()
 }

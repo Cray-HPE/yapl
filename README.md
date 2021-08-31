@@ -40,7 +40,8 @@ COMMANDS:
 GLOBAL OPTIONS:
    --file value, -f value  Pipeline file to read from (default: "./pipeline.yaml") [$PIPELINE_FILE]
    --vars value            json/yaml file containing variables for template [$YAPL_VARS]
-   --no-color              
+   --no-color              disable colorful output
+   --console-output        output command to console
    --help, -h              show help
 ```
 ## Road Map
