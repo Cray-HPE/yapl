@@ -59,25 +59,25 @@ func executeStep(pipeline *model.GenericYAML) error {
 		pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
 
 		err := execute(job.PreCondition, "Step: "+pipeline.Metadata.Name+" --- Checking Precondition")
-		PushToCache(step.ToGeneric())
+		PushToCache(step.ToGeneric()) //nolint
 		if err != nil {
 			return err
 		}
 
 		err = execute(job.Action, "Step: "+pipeline.Metadata.Name+" --- Executing Action")
-		PushToCache(step.ToGeneric())
+		PushToCache(step.ToGeneric()) //nolint
 		if err != nil {
 			return err
 		}
 
 		err = execute(job.PostValidation, "Step: "+pipeline.Metadata.Name+" --- Post action validation")
-		PushToCache(step.ToGeneric())
+		PushToCache(step.ToGeneric()) //nolint
 		if err != nil {
 			return err
 		}
 	}
 	pipeline.Metadata.Completed = true
-	PushToCache(step.ToGeneric())
+	PushToCache(step.ToGeneric()) //nolint
 	return nil
 }
 
