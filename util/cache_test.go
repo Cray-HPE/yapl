@@ -23,7 +23,7 @@ func Test_CachePushAndPop(t *testing.T) {
 			name: "happy path",
 			step: model.GenericYAML{
 				Kind: "step",
-				Metadata: model.Metadata{
+				Metadata: &model.Metadata{
 					Id:          uuid.NewString(),
 					ChildrenIds: []string{},
 				},
@@ -56,7 +56,7 @@ func Test_CacheHasRunAlready(t *testing.T) {
 			name: "happy path",
 			step: model.GenericYAML{
 				Kind: "step",
-				Metadata: model.Metadata{
+				Metadata: &model.Metadata{
 					Id:          uuid.NewString(),
 					ChildrenIds: []string{},
 					Completed:   false,

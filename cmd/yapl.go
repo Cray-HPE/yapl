@@ -31,7 +31,12 @@ func main() {
 			EnvVar: "YAPL_VARS",
 		},
 		cli.BoolFlag{
-			Name: "no-color",
+			Name:  "no-color",
+			Usage: "disable colorful output",
+		},
+		cli.BoolFlag{
+			Name:  "console-output",
+			Usage: "output command to console",
 		},
 	}
 	app.Commands = []cli.Command{
@@ -107,12 +112,13 @@ func main() {
 // converts a cli context into a yapl Config
 func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 	cfg := &util.Config{
-		File:      c.GlobalString("file"),
-		Debug:     c.Bool("debug"),
-		NoColor:   c.GlobalBool("no-color"),
-		Vars:      c.GlobalString("vars"),
-		OutputDir: c.String("output-dir"),
-		NoCache:   c.Bool("no-cache"),
+		File:          c.GlobalString("file"),
+		Debug:         c.Bool("debug"),
+		NoColor:       c.GlobalBool("no-color"),
+		Vars:          c.GlobalString("vars"),
+		OutputDir:     c.String("output-dir"),
+		NoCache:       c.Bool("no-cache"),
+		ConsoleOutput: c.GlobalBool("console-output"),
 	}
 
 	if cfg.NoColor {
@@ -129,6 +135,9 @@ func newRuntimeConfigFromCLI(c *cli.Context) *util.Config {
 		if err != nil {
 			log.Fatal(err)
 		}
+	}
+	if cfg.ConsoleOutput {
+		os.Setenv("ConsoleOutput", "true")
 	}
 
 	return cfg

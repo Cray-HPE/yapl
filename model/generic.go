@@ -3,9 +3,9 @@ package model
 import "gopkg.in/yaml.v2"
 
 type GenericYAML struct {
-	Kind     string                 `yaml:"kind,omitempty"`
-	Metadata Metadata               `yaml:"metadata,omitempty"`
-	Spec     map[string]interface{} `yaml:"spec,omitempty"`
+	Kind     string                  `yaml:"kind,omitempty"`
+	Metadata *Metadata               `yaml:"metadata,omitempty"`
+	Spec     *map[string]interface{} `yaml:"spec,omitempty"`
 }
 
 func NewGenericYAML() *GenericYAML {
