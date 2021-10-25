@@ -35,6 +35,7 @@ func executePipeline(pipelineId string) error {
 		err := executeStep(&pipeline)
 		if err != nil {
 			pterm.Info.Printf("Failed Pipeline/Step id: %s\n", pipeline.Metadata.Id)
+			return err
 		}
 	} else {
 		pterm.DefaultHeader.Printf("Pipeline: %s \n", pipeline.Metadata.Name)
