@@ -106,9 +106,9 @@ func execute(runnable *model.Runnable, name string) error {
 }
 
 func runCommand(cmd string, output io.Writer) error {
-	command := exec.Command("sh", "-c", cmd)
+	command := exec.Command("sh", "-ceuo pipefail", cmd)
 	if debug {
-		command = exec.Command("sh", "-cx", cmd)
+		command = exec.Command("sh", "-cxeuo pipefai", cmd)
 	}
 	command.Stdin = nil
 	command.Stdout = output
