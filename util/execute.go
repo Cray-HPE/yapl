@@ -60,7 +60,9 @@ func executePipeline(pipelineId string) error {
 }
 
 func executeStep(pipeline *model.GenericYAML) error {
-	progressBar.Increment()
+	if progressBar != nil {
+		progressBar.Increment()
+	}
 	step, _ := pipeline.ToStep()
 
 	for _, job := range step.Spec.Jobs {
