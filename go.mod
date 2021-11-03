@@ -14,12 +14,11 @@ require (
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
-	github.com/pterm/pterm v0.12.29
+	github.com/pterm/pterm v0.12.33
 	github.com/stretchr/testify v1.7.0
 	github.com/urfave/cli v1.22.5
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/image v0.0.0-20200119044424-58c23975cae1 // indirect
-	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/yaml.v2 v2.4.0
