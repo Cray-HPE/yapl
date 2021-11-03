@@ -130,7 +130,7 @@ func runCommand(cmd string, output io.Writer) error {
 	if debug {
 		command = exec.Command("sh", "-cxeu", cmd)
 	}
-	command.Stdin = nil
+	command.Stdin = os.Stdin
 	command.Stdout = output
 	command.Stderr = output
 
