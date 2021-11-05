@@ -63,30 +63,33 @@ func executePipeline(pipelineId string) error {
 
 func executeStep(pipeline *model.GenericYAML) error {
 	step, _ := pipeline.ToStep()
+	if !pipeline.Metadata.Completed {
+		for _, job := range step.Spec.Jobs {
+			pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
 
-	for _, job := range step.Spec.Jobs {
-		pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
+			err := execute(job.PreCondition, "Step: "+pipeline.Metadata.Name+" --- Checking Precondition")
+			PushToCache(step.ToGeneric()) //nolint
+			if err != nil {
+				return err
+			}
 
-		err := execute(job.PreCondition, "Step: "+pipeline.Metadata.Name+" --- Checking Precondition")
-		PushToCache(step.ToGeneric()) //nolint
-		if err != nil {
-			return err
+			err = execute(job.Action, "Step: "+pipeline.Metadata.Name+" --- Executing Action")
+			PushToCache(step.ToGeneric()) //nolint
+			if err != nil {
+				return err
+			}
+
+			err = execute(job.PostValidation, "Step: "+pipeline.Metadata.Name+" --- Post action validation")
+			PushToCache(step.ToGeneric()) //nolint
+			if err != nil {
+				return err
+			}
 		}
-
-		err = execute(job.Action, "Step: "+pipeline.Metadata.Name+" --- Executing Action")
+		step.Metadata.Completed = true
 		PushToCache(step.ToGeneric()) //nolint
-		if err != nil {
-			return err
-		}
-
-		err = execute(job.PostValidation, "Step: "+pipeline.Metadata.Name+" --- Post action validation")
-		PushToCache(step.ToGeneric()) //nolint
-		if err != nil {
-			return err
-		}
+	} else {
+		pterm.Warning.Println("Skip")
 	}
-	pipeline.Metadata.Completed = true
-	PushToCache(step.ToGeneric()) //nolint
 	return nil
 }
 
