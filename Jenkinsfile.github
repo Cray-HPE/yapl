@@ -20,7 +20,7 @@ pipeline {
   stages {
     stage('Prepare') {
       steps {
-        sh 'curl -sL https://git.io/goreleaser | bash'
+        sh 'go install github.com/goreleaser/goreleaser@latest'
       }
     }
 
