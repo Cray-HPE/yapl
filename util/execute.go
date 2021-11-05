@@ -36,9 +36,7 @@ func executePipeline(pipelineId string) error {
 	}
 
 	if pipeline.Kind == "step" {
-		progressBar.UpdateTitle("Running: " + pipeline.Metadata.Name)
 		err := executeStep(&pipeline)
-		progressBar.UpdateTitle("Done: " + pipeline.Metadata.Name)
 		if err != nil {
 			pterm.Info.Printf("Failed Pipeline/Step id: %s\n", pipeline.Metadata.Id)
 			return err
@@ -55,18 +53,18 @@ func executePipeline(pipelineId string) error {
 		if err := PushToCache(pipeline); err != nil {
 			return err
 		}
+
 	}
+	progressBar.UpdateTitle("Done: " + pipeline.Metadata.Name)
+	progressBar.Increment()
+	fmt.Println()
 	return nil
 }
 
 func executeStep(pipeline *model.GenericYAML) error {
-	if progressBar != nil {
-		progressBar.Increment()
-	}
 	step, _ := pipeline.ToStep()
 
 	for _, job := range step.Spec.Jobs {
-		fmt.Println()
 		pterm.Debug.Println(MarkdownToText(pipeline.Metadata.Description))
 
 		err := execute(job.PreCondition, "Step: "+pipeline.Metadata.Name+" --- Checking Precondition")
