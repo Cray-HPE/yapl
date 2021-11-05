@@ -18,15 +18,10 @@ pipeline {
   }
 
   stages {
-    stage('Prepare') {
-      steps {
-        sh 'go install github.com/goreleaser/goreleaser@latest'
-      }
-    }
 
     stage('Build: RPM') {
       steps {
-        sh "goreleaser release --rm-dist --skip-publish"
+        sh 'curl -sL https://git.io/goreleaser | bash -s -- release --rm-dist --skip-publish --snapshot'
       }
     }
 
