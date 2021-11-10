@@ -21,8 +21,8 @@ pipeline {
 
     stage('Build: RPM') {
       steps {
-        sh 'curl -sL https://git.io/goreleaser | bash -s -- --rm-dist --skip-publish --snapshot'
-        sh 'mv dist/yapl*.rpm dist/yapl-$(cat .version).rpm'
+        sh 'git tag v$(cat .version)'
+        sh 'curl -sL https://git.io/goreleaser | bash -s -- --rm-dist --skip-publish'
       }
     }
 
