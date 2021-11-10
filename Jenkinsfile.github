@@ -21,7 +21,7 @@ pipeline {
 
     stage('Build: RPM') {
       steps {
-        sh 'curl -sL https://git.io/goreleaser | bash -s -- release --rm-dist --skip-publish --snapshot'
+        sh 'curl -sL https://git.io/goreleaser | bash -s -- --rm-dist --skip-publish'
       }
     }
 
