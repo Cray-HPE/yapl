@@ -21,8 +21,7 @@ pipeline {
 
     stage('Build: RPM') {
       steps {
-        sh 'git tag v$(cat .version)'
-        sh 'curl -sL https://git.io/goreleaser | bash -s -- --rm-dist --skip-publish'
+        sh 'make rpm'
       }
     }
 
