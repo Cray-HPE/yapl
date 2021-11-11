@@ -139,8 +139,8 @@ reset:
 	git checkout go.mod go.sum
 
 build: fmt
-	go build -o bin/yapl 
-	bin/yapl version
+	go build -o bin/yapl ./cmd/yapl.go
+	bin/yapl
 
 rpm_package_source:
 	tar --transform 'flags=r;s,^,/$(SOURCE_NAME)/,' --exclude .git --exclude dist -cvjf $(SOURCE_PATH) .
