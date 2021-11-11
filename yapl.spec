@@ -33,7 +33,7 @@ GO111MODULE=on
 export CGO_ENABLED GOOS GOARCH GO111MODULE
 
 mkdir -pv ${RPM_BUILD_ROOT}/usr/bin/
-cp -pv bin/csi ${RPM_BUILD_ROOT}/usr/bin/yapl
+cp -pv bin/yapl ${RPM_BUILD_ROOT}/usr/bin/yapl
 
 %clean
 
