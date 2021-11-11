@@ -21,7 +21,7 @@ pipeline {
 
     stage('Build: RPM') {
       steps {
-        sh 'make tidy rpm'
+        sh 'make prepare tidy rpm'
       }
     }
 
